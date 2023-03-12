@@ -1,8 +1,7 @@
-package io.github.theminiluca.utils;
+package io.github.theminiluca.api.utils;
 
-import io.github.theminiluca.roin.war.plugin.api.Colour;
-import io.github.theminiluca.roin.war.plugin.api.armor.ArmorType;
-import io.github.theminiluca.roin.war.plugin.user.User;
+import io.github.theminiluca.api.event.ArmorType;
+import io.github.theminiluca.api.user.IUser;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -31,7 +30,7 @@ public class ItemExtension extends ItemStack implements Serializable {
         return new ItemExtension(mater);
     }
 
-    public ItemExtension translatable(User user) {
+    public ItemExtension translatable(IUser user) {
         ItemExtension item = item(this).displayname(user.translatable(getDisplayName()));
         item.displayname(user.translatable(getDisplayName()));
         if (item.hasLore()) {

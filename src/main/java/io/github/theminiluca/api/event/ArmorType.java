@@ -1,4 +1,4 @@
-package io.github.theminiluca.event;
+package io.github.theminiluca.api.event;
 
 import org.bukkit.inventory.ItemStack;
 

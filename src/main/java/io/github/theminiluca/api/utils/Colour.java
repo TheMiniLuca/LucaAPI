@@ -1,4 +1,4 @@
-package io.github.theminiluca.utils;
+package io.github.theminiluca.api.utils;
 
 import net.md_5.bungee.api.ChatColor;
 

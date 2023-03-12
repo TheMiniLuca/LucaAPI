@@ -1,13 +1,9 @@
-package io.github.theminiluca.command;
+package io.github.theminiluca.api.command;
 
-import io.github.theminiluca.LucaAPI;
-import io.github.theminiluca.roin.war.plugin.api.Colour;
-import io.github.theminiluca.roin.war.plugin.api.messages.ComponentText;
-import io.github.theminiluca.roin.war.plugin.command.CommandExecutor;
-import io.github.theminiluca.roin.war.plugin.command.label.CountryCommand;
-import io.github.theminiluca.roin.war.plugin.command.label.LanguageCommand;
-import io.github.theminiluca.roin.war.plugin.command.label.RoinWarCommand;
-import io.github.theminiluca.roin.war.plugin.user.User;
+import io.github.theminiluca.api.LucaAPI;
+import io.github.theminiluca.api.messages.ComponentText;
+import io.github.theminiluca.api.user.IUser;
+import io.github.theminiluca.api.utils.Colour;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
@@ -51,7 +47,7 @@ public class CommandManager implements org.bukkit.command.CommandExecutor, TabCo
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         String label = command.getLabel();
         if (!(commandSender instanceof Player player)) return false;
-        User user = RoinWar.getUser(player.getUniqueId());
+        IUser user = LucaAPI.getUser(player.getUniqueId());
         assert user != null;
         for (int i = 0; i < LABELS.size(); i++) {
             if (LABELS.containsKey(label)) {
@@ -99,7 +95,7 @@ public class CommandManager implements org.bukkit.command.CommandExecutor, TabCo
                     return null;
                 }
                 if (!(commandSender instanceof Player player)) return new ArrayList<>();
-                User user = RoinWar.getUser(player.getUniqueId());
+                IUser user = LucaAPI.getUser(player.getUniqueId());
                 assert user != null;
                 for (int j = 0; j < commandLabel.commandList().size(); j++) {
                     SubCommand sub = commandLabel.commandList().get(j);

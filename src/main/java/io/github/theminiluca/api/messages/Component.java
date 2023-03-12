@@ -1,4 +1,4 @@
-package io.github.theminiluca.messages;
+package io.github.theminiluca.api.messages;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 

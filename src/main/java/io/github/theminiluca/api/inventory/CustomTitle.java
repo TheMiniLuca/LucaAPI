@@ -1,4 +1,4 @@
-package io.github.theminiluca.roin.war.plugin.api.title;
+package io.github.theminiluca.api.inventory;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryType;
@@ -11,10 +11,6 @@ import java.util.Set;
 
 public class CustomTitle {
     public static final Set<CustomTitle> titles = new HashSet<>();
-
-    public static final CustomTitle LANGUAGE_SELECT = new CustomTitle("language.select.title.name");
-    public static final CustomTitle COUNTRY_STORAGE = new CustomTitle("country.storage.title.name");
-    public static final CustomTitle WORKBENCH = new CustomTitle("workbench.title");
     private String title;
     public final HashMap<String, Integer> page = new HashMap<>();
     public final HashMap<String, Object> data = new HashMap<>();

@@ -1,4 +1,4 @@
-package io.github.theminiluca.utils;
+package io.github.theminiluca.api.utils;
 
 public record Title(String title, String subtitle,
                     Duration fadeIn,

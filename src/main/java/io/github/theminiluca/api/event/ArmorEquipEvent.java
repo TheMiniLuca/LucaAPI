@@ -1,7 +1,7 @@
-package io.github.theminiluca.event;
+package io.github.theminiluca.api.event;
 
-import io.github.theminiluca.roin.war.plugin.RoinWar;
-import io.github.theminiluca.roin.war.plugin.user.User;
+import io.github.theminiluca.api.LucaAPI;
+import io.github.theminiluca.api.user.IUser;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
@@ -45,8 +45,8 @@ public final class ArmorEquipEvent extends PlayerEvent implements Cancellable{
 		this.newArmorPiece = newArmorPiece;
 	}
 
-	public User getUser() {
-		return RoinWar.getUser(player.getUniqueId());
+	public IUser getUser() {
+		return LucaAPI.getUser(player.getUniqueId());
 	}
 	/**
 	 * Gets a list of handlers handling this event.

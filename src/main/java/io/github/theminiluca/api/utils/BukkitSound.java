@@ -1,4 +1,4 @@
-package io.github.theminiluca.utils;
+package io.github.theminiluca.api.utils;
 
 import org.bukkit.Sound;
 

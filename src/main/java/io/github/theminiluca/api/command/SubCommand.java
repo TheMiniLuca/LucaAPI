@@ -1,6 +1,6 @@
-package io.github.theminiluca.command;
+package io.github.theminiluca.api.command;
 
-import io.github.theminiluca.roin.war.plugin.user.User;
+import io.github.theminiluca.api.user.IUser;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class SubCommand {
@@ -16,5 +16,5 @@ public abstract class SubCommand {
         return null;
     }
 
-    public abstract void perform(User user, String[] args);
+    public abstract void perform(IUser user, String[] args);
 }

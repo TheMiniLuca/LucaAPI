@@ -1,4 +1,4 @@
-package io.github.theminiluca.event;
+package io.github.theminiluca.api.event;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -15,7 +15,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
-import static io.github.theminiluca.roin.war.plugin.api.armor.ArmorEquipEvent.*;
+import static io.github.theminiluca.api.event.ArmorEquipEvent.*;
 
 
 /**

@@ -9,6 +9,7 @@ import io.github.theminiluca.api.utils.BukkitSound;
 import io.github.theminiluca.api.utils.Colour;
 import io.github.theminiluca.api.utils.Title;
 import io.github.theminiluca.sql.SQL;
+import io.github.theminiluca.sql.SQLManager;
 import io.github.theminiluca.sql.SQLObject;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
@@ -18,7 +19,7 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public abstract class lUser implements SQLObject {
+public class IUser implements SQLObject {
 
     @SQL(primary = true)
     protected final UUID uniqueId;
@@ -28,7 +29,7 @@ public abstract class lUser implements SQLObject {
 
     public boolean notTran = false;
 
-    public lUser(UUID uniqueId, String name, long firstJoin) {
+    public IUser(UUID uniqueId, String name, long firstJoin) {
         this.uniqueId = uniqueId;
         this.name = name;
         this.firstJoin = firstJoin;
@@ -181,5 +182,9 @@ public abstract class lUser implements SQLObject {
             return getPlayer().getName();
         else return Bukkit.getOfflinePlayer(uniqueId).getName();
     }
-    public abstract void saveSQL();
+
+    @Override
+    public void saveSQL() {
+        SQLManager.saveToJson(this, SQLManager.getDriver(this));
+    }
 }

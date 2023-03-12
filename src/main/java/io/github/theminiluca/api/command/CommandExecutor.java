@@ -1,4 +1,4 @@
-package io.github.theminiluca.command;
+package io.github.theminiluca.api.command;
 
 import java.util.ArrayList;
 import java.util.List;

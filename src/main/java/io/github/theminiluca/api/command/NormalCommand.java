@@ -1,7 +1,8 @@
-package io.github.theminiluca.command;
+package io.github.theminiluca.api.command;
 
-import io.github.theminiluca.roin.war.plugin.user.User;
+
+import io.github.theminiluca.api.user.IUser;
 
 public abstract class NormalCommand implements CommandI {
-    public abstract void perform(User user, String[] args);
+    public abstract void perform(IUser user, String[] args);
 }

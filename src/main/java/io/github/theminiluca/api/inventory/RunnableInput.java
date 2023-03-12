@@ -1,4 +1,4 @@
-package io.github.theminiluca.roin.war.plugin.api.title;
+package io.github.theminiluca.api.inventory;
 
 public interface RunnableInput {
 

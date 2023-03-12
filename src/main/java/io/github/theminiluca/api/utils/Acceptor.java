@@ -1,4 +1,4 @@
-package io.github.theminiluca.utils;
+package io.github.theminiluca.api.utils;
 
 public abstract class Acceptor<T> implements Runnable {
     private Consumer<T> consumer;

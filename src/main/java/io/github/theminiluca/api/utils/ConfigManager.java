@@ -1,5 +1,6 @@
-package io.github.theminiluca.roin.war.plugin;
+package io.github.theminiluca.api.utils;
 
+import io.github.theminiluca.api.LucaAPI;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -66,7 +67,7 @@ public class ConfigManager {
         this.plugin = plugin;
         plugin.getDataFolder().mkdir();
         new File(plugin.getDataFolder() + File.separator + "data").mkdir();
-        new File(RoinWar.getInstance().getDataFolder() + "\\" + "storage").mkdir();
+        new File(LucaAPI.getInstance().getDataFolder() + "\\" + "storage").mkdir();
         instance = this;
     }
 

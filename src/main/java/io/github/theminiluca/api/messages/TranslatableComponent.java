@@ -1,6 +1,7 @@
-package io.github.theminiluca.messages;
+package io.github.theminiluca.api.messages;
 
-import io.github.theminiluca.utils.Colour;
+import io.github.theminiluca.api.user.IUser;
+import io.github.theminiluca.api.utils.Colour;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 
@@ -106,7 +107,7 @@ public class TranslatableComponent implements Component {
         return this;
     }
 
-    public String build(User user) {
+    public String build(IUser user) {
         return LanguageManager.formatted(user.translatable(key()), getArgs());
     }
 

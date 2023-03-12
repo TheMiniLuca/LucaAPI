@@ -1,7 +1,5 @@
-package io.github.theminiluca.utils;
+package io.github.theminiluca.api.utils;
 
-import io.github.theminiluca.roin.war.plugin.RoinWar;
-import io.github.theminiluca.sql.SQLObject;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;

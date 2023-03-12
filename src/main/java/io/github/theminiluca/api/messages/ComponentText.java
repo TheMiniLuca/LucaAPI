@@ -1,6 +1,6 @@
-package io.github.theminiluca.messages;
+package io.github.theminiluca.api.messages;
 
-import io.github.theminiluca.utils.Colour;
+import io.github.theminiluca.api.utils.Colour;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.*;
 import net.md_5.bungee.api.chat.hover.content.Item;

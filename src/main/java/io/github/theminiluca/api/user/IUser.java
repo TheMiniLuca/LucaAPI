@@ -133,6 +133,11 @@ public class IUser implements SQLObject {
     }
 
 
+    public void sendTexts(Component[][] components) {
+        for (Component[] component : components) {
+            sendText(component);
+        }
+    }
     public void sendText(Component... components) {
         CraftPlayer craftPlayer = ((CraftPlayer) getPlayer());
         if (components == null) return;

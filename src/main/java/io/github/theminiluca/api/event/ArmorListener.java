@@ -1,5 +1,6 @@
 package io.github.theminiluca.api.event;
 
+import io.github.theminiluca.api.event.impl.ArmorEquipEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -15,7 +16,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
-import static io.github.theminiluca.api.event.ArmorEquipEvent.*;
+import static io.github.theminiluca.api.event.impl.ArmorEquipEvent.*;
 
 
 /**

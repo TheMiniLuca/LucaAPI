@@ -1,6 +1,7 @@
-package io.github.theminiluca.api.event;
+package io.github.theminiluca.api.event.impl;
 
 import io.github.theminiluca.api.LucaAPI;
+import io.github.theminiluca.api.event.ArmorType;
 import io.github.theminiluca.api.user.IUser;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -13,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
  * @since Jul 30, 2015
  */
 public final class ArmorEquipEvent extends PlayerEvent implements Cancellable{
-	
+
 	private static final HandlerList handlers = new HandlerList();
 	private boolean cancel = false;
 	private final EquipMethod equipType;

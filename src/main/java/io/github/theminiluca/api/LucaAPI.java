@@ -1,7 +1,16 @@
 package io.github.theminiluca.api;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
 import io.github.theminiluca.api.command.CommandManager;
+import io.github.theminiluca.api.event.impl.FakeSignUpdateEvent;
 import io.github.theminiluca.api.user.IUser;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -26,6 +35,20 @@ public class LucaAPI {
         instance = plugin;
         CommandManager.loadCommands();
         new BukkitListener(plugin);
+
+        ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+        protocolManager.addPacketListener(new PacketAdapter
+                (getInstance(), ListenerPriority.HIGHEST, PacketType.Play.Client.UPDATE_SIGN) {
+            @Override
+            public void onPacketReceiving(PacketEvent event) {
+                PacketContainer packet = event.getPacket();
+                IUser user = LucaAPI.getUser(event.getPlayer().getUniqueId());
+                Bukkit.getScheduler().runTask(instance, () -> {
+                    FakeSignUpdateEvent signUpdateEvent = new FakeSignUpdateEvent(user, packet.getStringArrays().getValues().get(0));
+                    Bukkit.getServer().getPluginManager().callEvent(signUpdateEvent);
+                });
+            }
+        });
     }
 
 }

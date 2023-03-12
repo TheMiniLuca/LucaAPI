@@ -14,8 +14,17 @@ import io.github.theminiluca.sql.SQL;
 import io.github.theminiluca.sql.SQLManager;
 import io.github.theminiluca.sql.SQLObject;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.minecraft.core.BlockPosition;
+import net.minecraft.network.chat.IChatBaseComponent;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.PacketPlayOutBlockChange;
+import net.minecraft.network.protocol.game.PacketPlayOutOpenSignEditor;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.TileEntitySign;
+import net.minecraft.world.level.block.state.IBlockData;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_19_R2.block.CraftSign;
 import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class IUser implements SQLObject {
 
@@ -33,6 +43,8 @@ public class IUser implements SQLObject {
     protected String locale = null;
 
     public boolean notTran = false;
+
+    protected transient CompletableFuture<String[]> callback;
 
     public transient HashMap<String, Boolean> cooltimes = new HashMap<>();
 
@@ -48,22 +60,22 @@ public class IUser implements SQLObject {
 
 
 
-    public boolean isCooltime(String key) {
+    public final boolean isCooltime(String key) {
         return cooltimes.getOrDefault(key.toUpperCase(), false);
     }
 
-    public void setCooltime(String key, boolean cooltime) {
+    public final void setCooltime(String key, boolean cooltime) {
         this.cooltimes.put(key.toUpperCase(), cooltime);
     }
 
 
-    public void startCoolTime(String key, Duration delay) {
+    public final void startCoolTime(String key, Duration delay) {
         setCooltime(key.toUpperCase(), true);
         Bukkit.getServer().getScheduler()
                 .scheduleSyncDelayedTask(LucaAPI.getInstance(), () -> setCooltime(key.toUpperCase(), false));
     }
 
-    public boolean cooltime(@Nullable String waringMessage, String key, Duration delay) {
+    public final boolean cooltime(@Nullable String waringMessage, String key, Duration delay) {
         if (isCooltime(key)) {
             if (waringMessage != null)
                 sendText(ComponentText.waring(waringMessage));
@@ -73,73 +85,73 @@ public class IUser implements SQLObject {
         return false;
     }
 
-    public boolean cooltime(String key, Duration delay) {
+    public final boolean cooltime(String key, Duration delay) {
         return cooltime(null, key, delay);
     }
 
-    public void startCoolTime(String key) {
+    public final void startCoolTime(String key) {
         startCoolTime(key, Duration.ofSeconds(1));
     }
     protected final long firstJoin;
     protected long lastJoin = 0;
     protected long lastQuit = 0;
 
-    public UUID getUniqueId() {
+    public final UUID getUniqueId() {
         return uniqueId;
     }
 
-    public String getLocale() {
+    public final String getLocale() {
         return locale;
     }
 
-    public void setLocale(String locale) {
+    public final void setLocale(String locale) {
         this.locale = locale;
     }
 
-    public long getFirstJoin() {
+    public final long getFirstJoin() {
         return firstJoin;
     }
 
-    public long getLastJoin() {
+    public final long getLastJoin() {
         return lastJoin;
     }
 
-    public void setLastJoin(long lastJoin) {
+    public final void setLastJoin(long lastJoin) {
         this.lastJoin = lastJoin;
     }
 
-    public long getLastQuit() {
+    public final long getLastQuit() {
         return lastQuit;
     }
 
-    public void setLastQuit(long lastQuit) {
+    public final void setLastQuit(long lastQuit) {
         this.lastQuit = lastQuit;
     }
 
-    public Location getLocation() {
+    public final Location getLocation() {
         return getPlayer().getLocation();
     }
 
-    public boolean isOnline() {
+    public final boolean isOnline() {
         return Bukkit.getOfflinePlayer(getUniqueId()).isOnline();
     }
 
 
-    public boolean isPlayer() {
+    public final boolean isPlayer() {
         if (uniqueId == null) return false;
         Player player = Bukkit.getPlayer(uniqueId);
         return player != null && player.isOnline();
     }
 
-    public CustomTitle titleTranslatable(CustomTitle customTitle) {
+    public final CustomTitle titleTranslatable(CustomTitle customTitle) {
         return customTitle.translatable(this.translatable(customTitle.title()));
     }
 
-    public String translatable(String key) {
+    public final String translatable(String key) {
         return translatable(getMyLanguage(), key);
     }
 
-    public String translatable(String locale, String key) {
+    public final String translatable(String locale, String key) {
         StringBuilder sb = new StringBuilder();
         if (key == null)
             sb.append("N/A");
@@ -154,7 +166,7 @@ public class IUser implements SQLObject {
         return sb.toString();
     }
 
-    public String translatable(String[] keys) {
+    public final String translatable(String[] keys) {
         StringBuilder sb = new StringBuilder();
         for (String key : keys) {
             sb.append(translatable(key));
@@ -162,22 +174,22 @@ public class IUser implements SQLObject {
         return sb.toString();
     }
 
-    public String getClientLanguage() {
+    public final String getClientLanguage() {
         return getPlayer().getLocale();
     }
 
-    public String getMyLanguage() {
+    public final String getMyLanguage() {
         if (locale == null) return getClientLanguage();
         return locale;
     }
 
 
-    public void sendTexts(Component[][] components) {
+    public final void sendTexts(Component[][] components) {
         for (Component[] component : components) {
             sendText(component);
         }
     }
-    public void sendText(Component... components) {
+    public final void sendText(Component... components) {
         CraftPlayer craftPlayer = ((CraftPlayer) getPlayer());
         if (components == null) return;
         if (components.length == 0) return;
@@ -211,27 +223,36 @@ public class IUser implements SQLObject {
         }
     }
 
-    public void playSound(BukkitSound sound) {
+    public final void playSound(BukkitSound sound) {
         if (isPlayer())
             getPlayer().playSound(getLocation(), sound.sound(), sound.volume(), sound.pitch());
     }
 
-    public Player getPlayer() throws NullPointerException {
+    public final Player getPlayer() throws NullPointerException {
         if (isPlayer()) return Bukkit.getPlayer(uniqueId);
         throw new NullPointerException("플레이어가 null 값으로 플레이어 정보를 불러올 수 없습니다.");
     }
 
-    public void showTitle(Title title) {
+    public final void showTitle(Title title) {
         getPlayer().sendTitle(title.title(), title.subtitle(), title.fadeOut().ticks(),
                 title.stay().ticks(), title.fadeOut().ticks());
     }
 
-    public String getName() {
+    public final String getName() {
         if (isPlayer())
             return getPlayer().getName();
         else return Bukkit.getOfflinePlayer(uniqueId).getName();
     }
 
+
+
+    public void sendPacket(Packet<?> packet) {
+        if (!isPlayer()) return;
+
+
+        ((CraftPlayer)getPlayer()).getHandle().b.a(packet);
+
+    }
     @Override
     public void saveSQL() {
         SQLManager.saveToJson(this, SQLManager.getDriver(this));

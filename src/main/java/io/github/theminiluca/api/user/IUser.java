@@ -1,5 +1,6 @@
 package io.github.theminiluca.api.user;
 
+import io.github.theminiluca.api.LucaAPI;
 import io.github.theminiluca.api.inventory.CustomTitle;
 import io.github.theminiluca.api.messages.Component;
 import io.github.theminiluca.api.messages.ComponentText;
@@ -7,6 +8,7 @@ import io.github.theminiluca.api.messages.LanguageManager;
 import io.github.theminiluca.api.messages.TranslatableComponent;
 import io.github.theminiluca.api.utils.BukkitSound;
 import io.github.theminiluca.api.utils.Colour;
+import io.github.theminiluca.api.utils.Duration;
 import io.github.theminiluca.api.utils.Title;
 import io.github.theminiluca.sql.SQL;
 import io.github.theminiluca.sql.SQLManager;
@@ -17,7 +19,9 @@ import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 public class IUser implements SQLObject {
@@ -30,6 +34,8 @@ public class IUser implements SQLObject {
 
     public boolean notTran = false;
 
+    public transient HashMap<String, Boolean> cooltimes = new HashMap<>();
+
     public IUser(UUID uniqueId, String name, long firstJoin) {
         this.uniqueId = uniqueId;
         this.name = name;
@@ -41,6 +47,39 @@ public class IUser implements SQLObject {
     }
 
 
+
+    public boolean isCooltime(String key) {
+        return cooltimes.getOrDefault(key.toUpperCase(), false);
+    }
+
+    public void setCooltime(String key, boolean cooltime) {
+        this.cooltimes.put(key.toUpperCase(), cooltime);
+    }
+
+
+    public void startCoolTime(String key, Duration delay) {
+        setCooltime(key.toUpperCase(), true);
+        Bukkit.getServer().getScheduler()
+                .scheduleSyncDelayedTask(LucaAPI.getInstance(), () -> setCooltime(key.toUpperCase(), false));
+    }
+
+    public boolean cooltime(@Nullable String waringMessage, String key, Duration delay) {
+        if (isCooltime(key)) {
+            if (waringMessage != null)
+                sendText(ComponentText.waring(waringMessage));
+            return true;
+        }
+        startCoolTime(key, delay);
+        return false;
+    }
+
+    public boolean cooltime(String key, Duration delay) {
+        return cooltime(null, key, delay);
+    }
+
+    public void startCoolTime(String key) {
+        startCoolTime(key, Duration.ofSeconds(1));
+    }
     protected final long firstJoin;
     protected long lastJoin = 0;
     protected long lastQuit = 0;

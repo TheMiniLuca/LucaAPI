@@ -16,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -23,7 +24,7 @@ public class IUser implements SQLObject {
 
     @SQL(primary = true)
     protected final UUID uniqueId;
-    protected final String name;
+    protected String name;
 
     protected String locale = null;
 
@@ -34,6 +35,11 @@ public class IUser implements SQLObject {
         this.name = name;
         this.firstJoin = firstJoin;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
 
     protected final long firstJoin;
     protected long lastJoin = 0;
@@ -125,7 +131,6 @@ public class IUser implements SQLObject {
         if (locale == null) return getClientLanguage();
         return locale;
     }
-
 
 
     public void sendText(Component... components) {

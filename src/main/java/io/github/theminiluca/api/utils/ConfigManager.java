@@ -9,10 +9,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class ConfigManager {
 
@@ -28,7 +25,7 @@ public class ConfigManager {
             plugin.reloadConfig();
             plugin.saveConfig();
             for (Option option : Option.values()) {
-                values.put(option.name(), plugin.getConfig().get(option.path, option.clazz));
+                values.put(option.getPath(), plugin.getConfig().get(option.path, option.clazz));
             }
             configuration = plugin.getConfig();
             config.delete();
@@ -50,7 +47,7 @@ public class ConfigManager {
             YamlConfiguration yaml = YamlConfiguration.loadConfiguration(config);
             for (Option option : Option.values()) {
                 option.object = plugin.getConfig().getObject(option.path, option.clazz);
-                Object value = values.get(option.name());
+                Object value = values.get(option.getPath());
                 if (value == null) continue;
                 yaml.set(option.getPath(), value);
             }
@@ -93,17 +90,21 @@ public class ConfigManager {
         return plugin.getConfig().getStringList(e.path);
     }
 
-    public enum Option {
-        DISCORD_TOKEN("discord.token", String.class),
-        DATE_FORMATTED("static.date-format", String.class),
-        AUTO_SAVE("static.auto-save", Number.class);
+    public static class Option {
+
+        public static final Set<Option> options = new HashSet<>();
         private final String path;
         private final Class<?> clazz;
         private Object object;
 
-        Option(String path, Class<?> clazz) {
+        public static Set<Option> values() {
+            return options;
+        }
+
+        public Option(String path, Class<?> clazz) {
             this.path = path;
             this.clazz = clazz;
+            options.add(this);
         }
 
         @SuppressWarnings("unchecked")

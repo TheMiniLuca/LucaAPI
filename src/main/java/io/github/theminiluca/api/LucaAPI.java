@@ -10,6 +10,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import io.github.theminiluca.api.command.CommandManager;
 import io.github.theminiluca.api.event.impl.FakeSignUpdateEvent;
 import io.github.theminiluca.api.user.IUser;
+import io.github.theminiluca.api.utils.ConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -35,7 +36,7 @@ public class LucaAPI {
         instance = plugin;
         CommandManager.loadCommands();
         new BukkitListener(plugin);
-
+        new ConfigManager(plugin).setup();
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
         protocolManager.addPacketListener(new PacketAdapter
                 (getInstance(), ListenerPriority.HIGHEST, PacketType.Play.Client.UPDATE_SIGN) {

@@ -10,24 +10,14 @@ import io.github.theminiluca.api.utils.BukkitSound;
 import io.github.theminiluca.api.utils.Colour;
 import io.github.theminiluca.api.utils.Duration;
 import io.github.theminiluca.api.utils.Title;
-import io.github.theminiluca.sql.SQL;
 import io.github.theminiluca.sql.SQLManager;
 import io.github.theminiluca.sql.SQLObject;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.minecraft.core.BlockPosition;
-import net.minecraft.network.chat.IChatBaseComponent;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.PacketPlayOutBlockChange;
-import net.minecraft.network.protocol.game.PacketPlayOutOpenSignEditor;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.TileEntitySign;
-import net.minecraft.world.level.block.state.IBlockData;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_19_R2.block.CraftSign;
 import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -36,7 +26,6 @@ import java.util.concurrent.CompletableFuture;
 
 public class IUser implements SQLObject {
 
-    @SQL(primary = true)
     protected final UUID uniqueId;
     protected String name;
 
@@ -252,9 +241,5 @@ public class IUser implements SQLObject {
 
         ((CraftPlayer)getPlayer()).getHandle().b.a(packet);
 
-    }
-    @Override
-    public void saveSQL() {
-        SQLManager.saveToJson(this, SQLManager.getDriver(this));
     }
 }

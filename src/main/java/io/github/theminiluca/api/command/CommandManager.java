@@ -51,7 +51,7 @@ public class CommandManager implements org.bukkit.command.CommandExecutor, TabCo
         assert user != null;
         for (int i = 0; i < LABELS.size(); i++) {
             if (LABELS.containsKey(label)) {
-                if (!(LABELS.get(label) instanceof CommandExecutor executor)) {
+                if (!(LABELS.get(label) instanceof CommandLabel executor)) {
                     NormalCommand normalCommand = (NormalCommand) LABELS.get(label);
                     normalCommand.perform(user, args);
                     return false;
@@ -91,12 +91,13 @@ public class CommandManager implements org.bukkit.command.CommandExecutor, TabCo
         List<String> arguments = new ArrayList<>();
         for (int i = 0; i < LABELS.size(); i++) {
             if (LABELS.containsKey(label)) {
-                if (!(LABELS.get(label) instanceof CommandExecutor commandLabel)) {
-                    return null;
-                }
                 if (!(commandSender instanceof Player player)) return new ArrayList<>();
                 IUser user = LucaAPI.getUser(player.getUniqueId());
                 assert user != null;
+                if (LABELS.get(label) instanceof NormalCommand normalCommand) {
+                    return normalCommand.tabcomplete(user, args);
+                }
+                CommandLabel commandLabel = (CommandLabel) LABELS.get(label);
                 for (int j = 0; j < commandLabel.commandList().size(); j++) {
                     SubCommand sub = commandLabel.commandList().get(j);
                     arguments.add(user.translatable(user.translatable(commandLabel.name(sub))));

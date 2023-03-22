@@ -3,7 +3,7 @@ package io.github.theminiluca.api.command;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class CommandExecutor implements CommandI {
+public abstract class CommandLabel implements CommandI {
 
 
     public abstract String label();

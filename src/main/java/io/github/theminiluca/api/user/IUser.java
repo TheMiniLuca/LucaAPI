@@ -10,13 +10,12 @@ import io.github.theminiluca.api.utils.BukkitSound;
 import io.github.theminiluca.api.utils.Colour;
 import io.github.theminiluca.api.utils.Duration;
 import io.github.theminiluca.api.utils.Title;
-import io.github.theminiluca.sql.SQLManager;
 import io.github.theminiluca.sql.SQLObject;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.minecraft.network.protocol.Packet;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -173,13 +172,12 @@ public class IUser implements SQLObject {
     }
 
 
-    public final void sendTexts(Component[][] components) {
+    public void sendTexts(Component[][] components) {
         for (Component[] component : components) {
             sendText(component);
         }
     }
-    public final void sendText(Component... components) {
-        CraftPlayer craftPlayer = ((CraftPlayer) getPlayer());
+    public void sendText(Component... components) {
         if (components == null) return;
         if (components.length == 0) return;
         if (isPlayer()) {

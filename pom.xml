@@ -9,7 +9,9 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>main-core</module>
+        <module>core-api</module>
+        <module>v1_19_R1</module>
+        <module>v1_19_R3</module>
     </modules>
 
     <properties>

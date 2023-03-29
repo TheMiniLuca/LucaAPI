@@ -41,7 +41,7 @@ public class LucaAPI {
     public static IUser multiversion(UUID uniqueId, String name, long firstJoin)  {
         final Class<?> clazz;
         try {
-            clazz = Class.forName("com.gihub.theminiluca.api." + version + ".user.CraftUser");
+            clazz = Class.forName("io.github.theminiluca.api." + version + ".user.CraftUser");
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -58,7 +58,7 @@ public class LucaAPI {
         LucaAPI.version = packageName.substring(packageName.lastIndexOf('.') + 1);
         final Class<?> clazz;
         try {
-            clazz = Class.forName("com.github.theminiluca.api." + version + ".messages.NMSHandler");
+            clazz = Class.forName("io.github.theminiluca.api." + version + ".messages.NMSHandler");
             if (NMS.class.isAssignableFrom(clazz)) {
                     nmsHandler = (NMS) clazz.getConstructor().newInstance();
             }

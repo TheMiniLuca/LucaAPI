@@ -15,10 +15,21 @@ public class LanguageManager {
 
     private static final Map<String, Map<String, String>> LANGUAGE_MESSAGES = new HashMap<>();
 
+    public static String TRANSLATION_PATH = "messages/";
+
+    public static void registerLanguages(String language) {
+        SUPPORT_LANGUAGE.add(language);
+    }
+
+
+    public LinkedHashSet<String> getSupportLanguage() {
+        return SUPPORT_LANGUAGE;
+    }
+
+
     public static String getLanguage(String language, String propertiesKey) {
         return LANGUAGE_MESSAGES.get(language).get(propertiesKey);
     }
-
 
 
     public static String formatted(String message, Object... objects) {
@@ -43,7 +54,7 @@ public class LanguageManager {
         Properties properties = new Properties();
         for (String lang : SUPPORT_LANGUAGE) {
             try {
-                InputStream resource = plugin.getResource("messages/" + lang + ".properties");
+                InputStream resource = plugin.getResource(TRANSLATION_PATH + lang + ".properties");
                 assert resource != null;
                 Reader reader = new InputStreamReader(resource, StandardCharsets.UTF_8);
                 properties.load(reader);

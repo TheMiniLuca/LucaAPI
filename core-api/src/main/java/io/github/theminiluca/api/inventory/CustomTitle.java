@@ -30,8 +30,8 @@ public class CustomTitle {
         titles.add(this);
     }
 
-    public void run(String uniqueId) {
-        runnables.running(uniqueId);
+    public void run(String uniqueId, String... args) {
+        runnables.running(uniqueId, args);
     }
 
     public int getPage(String uniqueId, int defaults) {

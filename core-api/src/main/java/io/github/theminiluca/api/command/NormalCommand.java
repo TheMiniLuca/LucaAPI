@@ -1,11 +1,11 @@
 package io.github.theminiluca.api.command;
 
 
-import io.github.theminiluca.api.user.IUser;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
 public abstract class NormalCommand implements CommandI {
-    public abstract void perform(IUser user, String[] args);
-    public abstract List<String> tabcomplete(IUser user, String[] args);
+    public abstract void perform(Player sender, String[] args);
+    public abstract List<String> tabcomplete(Player sender, String[] args);
 }

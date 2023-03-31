@@ -1,12 +1,18 @@
 package io.github.theminiluca.api.utils;
 
+import com.mojang.authlib.properties.Property;
+import io.github.theminiluca.api.LucaAPI;
 import io.github.theminiluca.api.event.ArmorType;
-import io.github.theminiluca.api.user.IUser;
 import net.md_5.bungee.api.ChatColor;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -15,6 +21,7 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.*;
 
 
@@ -28,15 +35,6 @@ public class ItemExtension extends ItemStack implements Serializable {
     public static @NotNull ItemExtension item(final Material material) {
         Material mater = (material == null ? Material.AIR : material);
         return new ItemExtension(mater);
-    }
-
-    public ItemExtension translatable(IUser user) {
-        ItemExtension item = item(this).displayname(user.translatable(getDisplayName()));
-        item.displayname(user.translatable(getDisplayName()));
-        if (item.hasLore()) {
-            item.setLore(user.translatable(getLore().get(0)).split("\n"));
-        }
-        return item;
     }
 
     public static ItemExtension AIR = newAirItem();
@@ -388,6 +386,65 @@ public class ItemExtension extends ItemStack implements Serializable {
     @NotNull
     public static ItemExtension deserialize(@NotNull Map<String, Object> args) {
         return item(ItemStack.deserialize(args));
+    }
+
+    public NBTTagCompound getNBTTag() {
+        return LucaAPI.nmsHandler.getNBTTag(this);
+    }
+    public Property getProperty() {
+        Field field = null;
+        try {
+            Map<String, NBTBase> map = getNBT(getNBTTag());
+            NBTTagCompound compound = (NBTTagCompound) getNBT(((NBTTagCompound) map.get("SkullOwner"))).get("Properties");
+            Map<String, NBTBase> textures = getNBT((NBTTagCompound) getNBT((NBTTagList) getNBT(compound).get("textures")).get(0));
+            String value = getNBT((NBTTagString) textures.get("Value"));
+            String signature = null;
+            try {
+                signature = getNBT((NBTTagString) textures.get("Signature"));
+            } catch (Exception ignored) {
+
+            }
+            return new Property("textures", value, signature);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @SuppressWarnings("unchecked")
+    private Map<String, NBTBase> getNBT(NBTTagCompound tag) {
+        Field field = null;
+        try {
+            field = NBTTagCompound.class.getDeclaredField("x");
+            field.setAccessible(true);
+            Map<String, NBTBase> map = (Map<String, NBTBase>) field.get(tag);
+            return map;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<NBTBase> getNBT(NBTTagList tag) {
+        Field field = null;
+        try {
+            field = NBTTagList.class.getDeclaredField("c");
+            field.setAccessible(true);
+            List<NBTBase> list = (List<NBTBase>) field.get(tag);
+            return list;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private String getNBT(NBTTagString tag) {
+        Field field = null;
+        try {
+            field = NBTTagString.class.getDeclaredField("A");
+            field.setAccessible(true);
+            return (String) field.get(tag);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @NotNull

@@ -2,7 +2,6 @@ package io.github.theminiluca.api.command;
 
 import io.github.theminiluca.api.messages.ComponentText;
 import io.github.theminiluca.api.LucaAPI;
-import io.github.theminiluca.api.user.IUser;
 import io.github.theminiluca.api.utils.Colour;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -43,37 +42,35 @@ public class CommandManager implements org.bukkit.command.CommandExecutor, TabCo
             command.setExecutor(executor);
         }
     }
+
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         String label = command.getLabel();
         if (!(commandSender instanceof Player player)) return false;
-        IUser user = LucaAPI.getUser(player.getUniqueId());
-        assert user != null;
         for (int i = 0; i < LABELS.size(); i++) {
             if (LABELS.containsKey(label)) {
                 if (!(LABELS.get(label) instanceof CommandLabel executor)) {
                     NormalCommand normalCommand = (NormalCommand) LABELS.get(label);
-                    normalCommand.perform(user, args);
+                    normalCommand.perform(player, args);
                     return false;
                 }
                 if (args.length == 0) {
-                    for (int j = 0; j < executor.commandList().size(); j++) {
-                        SubCommand sub = executor.commandList().get(j);
-                        String explain = user.translatable(executor.description(sub));
-                        String syntax = user.translatable(executor.syntax(sub));
-                        user.sendText(ComponentText.text("/" + Colour.WHITE + syntax + Colour.EXPLAIN + " - " + explain));
-                    }
+                    executor.commandHelp(player).run();
                     return false;
                 }
                 for (int j = 0; j < executor.commandList().size(); j++) {
                     SubCommand sub = executor.commandList().get(j);
-                    if (args[0].equalsIgnoreCase(user.translatable(executor.name(sub)))) {
+                    if (args[0].equalsIgnoreCase(executor.name(sub))) {
                         String[] array = Arrays.copyOfRange(args, 1, args.length);
                         if (array.length < sub.syntax().length) {
-                            user.sendText(ComponentText.text("/" + user.translatable(executor.syntax(sub))));
+                            StringBuilder sb = new StringBuilder();
+                            for (String syntax : executor.syntax(sub)) {
+                                sb.append(syntax).append(" ");
+                            }
+                            player.sendMessage("/" + sb);
                             return false;
                         }
-                        executor.commandList().get(j).perform(user, array);
+                        executor.commandList().get(j).perform(player, array);
                         return false;
                     }
                 }
@@ -92,15 +89,13 @@ public class CommandManager implements org.bukkit.command.CommandExecutor, TabCo
         for (int i = 0; i < LABELS.size(); i++) {
             if (LABELS.containsKey(label)) {
                 if (!(commandSender instanceof Player player)) return new ArrayList<>();
-                IUser user = LucaAPI.getUser(player.getUniqueId());
-                assert user != null;
                 if (LABELS.get(label) instanceof NormalCommand normalCommand) {
-                    return normalCommand.tabcomplete(user, args);
+                    return normalCommand.tabcomplete(player, args);
                 }
                 CommandLabel commandLabel = (CommandLabel) LABELS.get(label);
                 for (int j = 0; j < commandLabel.commandList().size(); j++) {
                     SubCommand sub = commandLabel.commandList().get(j);
-                    arguments.add(user.translatable(user.translatable(commandLabel.name(sub))));
+                    arguments.add(commandLabel.name(sub));
                 }
                 for (String argument : arguments) {
                     if (argument.toLowerCase().startsWith(args[0].toLowerCase())) {
@@ -108,8 +103,9 @@ public class CommandManager implements org.bukkit.command.CommandExecutor, TabCo
                     }
                 }
                 return complete;
+
             }
         }
-        return null;
+        return new ArrayList<>();
     }
 }

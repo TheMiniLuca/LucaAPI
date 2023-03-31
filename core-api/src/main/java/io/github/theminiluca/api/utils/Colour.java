@@ -47,7 +47,7 @@ public final class Colour {
         Matcher patternC = pattern.matcher(msg);
         while (patternC.find()) {
             String color = msg.substring(patternC.start(), patternC.end());
-            msg = msg.replace(color, ChatColor.of(color.replace("<", "").replace(">", "")).toString());
+            msg = msg.replace(color, ChatColor.of(color.replace("&#", "")).toString());
             patternC = pattern.matcher(msg);
         }
         Matcher defaultsC = defaults.matcher(msg);

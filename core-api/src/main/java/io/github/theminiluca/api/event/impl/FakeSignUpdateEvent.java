@@ -1,6 +1,5 @@
 package io.github.theminiluca.api.event.impl;
 
-import io.github.theminiluca.api.user.IUser;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
@@ -13,16 +12,10 @@ public class FakeSignUpdateEvent extends Event {
         return handlers;
     }
 
-    private final IUser user;
     private final String[] line;
 
-    public FakeSignUpdateEvent(@NotNull IUser user, String[] line) {
-        this.user = user;
+    public FakeSignUpdateEvent(String[] line) {
         this.line = line;
-    }
-
-    public IUser getUser() {
-        return user;
     }
 
     public String[] getLine() {

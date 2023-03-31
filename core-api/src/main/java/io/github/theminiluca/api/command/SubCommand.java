@@ -1,6 +1,6 @@
 package io.github.theminiluca.api.command;
 
-import io.github.theminiluca.api.user.IUser;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class SubCommand {
@@ -16,5 +16,5 @@ public abstract class SubCommand {
         return null;
     }
 
-    public abstract void perform(IUser user, String[] args);
+    public abstract void perform(Player user, String[] args);
 }

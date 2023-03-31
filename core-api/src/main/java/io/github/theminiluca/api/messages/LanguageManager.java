@@ -1,13 +1,11 @@
 package io.github.theminiluca.api.messages;
 
+import io.github.theminiluca.api.utils.Colour;
 import org.bukkit.plugin.Plugin;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 public class LanguageManager {
 
@@ -22,13 +20,17 @@ public class LanguageManager {
     }
 
 
-    public LinkedHashSet<String> getSupportLanguage() {
+    public static LinkedHashSet<String> getSupportLanguage() {
         return SUPPORT_LANGUAGE;
     }
 
 
-    public static String getLanguage(String language, String propertiesKey) {
+    public static String getLanguage(String language, String propertiesKey) throws NullPointerException{
         return LANGUAGE_MESSAGES.get(language).get(propertiesKey);
+    }
+
+    public static String getLanguageColor(String language, String propertiesKey) throws NullPointerException{
+        return Colour.format(getLanguage(language, propertiesKey));
     }
 
 

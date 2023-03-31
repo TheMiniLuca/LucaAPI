@@ -1,5 +1,9 @@
 package io.github.theminiluca.api.command;
 
+import io.github.theminiluca.api.utils.Colour;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,31 +14,37 @@ public abstract class CommandLabel implements CommandI {
 
     public abstract List<SubCommand> commandList();
 
+    public BukkitRunnable commandHelp(Player player) {
+        CommandLabel label = this;
+        return new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (int j = 0; j < label.commandList().size(); j++) {
+                    SubCommand sub = label.commandList().get(j);
+                    String explain = label.description(sub);
+                    StringBuilder sb = new StringBuilder();
+                    for (String syntax : label.syntax(sub)) {
+                        sb.append(syntax).append(" ");
+                    }
+                    String syntax = sb.toString();
+                    player.sendMessage("/" + Colour.WHITE + syntax + Colour.EXPLAIN + " - " + explain);
+                }
+            }
+        };
+    };
+
     public String description(SubCommand command) {
-        if (command.description() == null)
-            return label() + "." + command.name() + ".desc";
-        else return command.description();
+        return command.description();
     }
 
     public String name(SubCommand command) {
-        if (translatable())
-            return label() + "." + command.name() + ".command";
-        else
-            return command.name();
+        return command.name();
     }
-
-    public boolean translatable() {
-        return true;
-    }
-
 
 
     public String[] syntax(SubCommand command) {
         List<String> syntax = new ArrayList<>();
-        if (!translatable())
-            syntax.add(label());
-        else
-            syntax.add(label() + ".command");
+        syntax.add(label());
         syntax.add(" ");
         syntax.add(name(command));
         for (int i = 0; i < command.syntax().length; i++) {

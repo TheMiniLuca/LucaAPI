@@ -13,6 +13,7 @@ public class CustomTitle {
     private String title;
     public final HashMap<String, Integer> page = new HashMap<>();
     public final HashMap<String, Object> data = new HashMap<>();
+    public final HashMap<String, HashMap<String, Object>> hashMapData = new HashMap<>();
     public InputRunnable runnables;
 
 
@@ -46,6 +47,9 @@ public class CustomTitle {
             data.put(uniqueId, defaults);
         }
         return data.get(uniqueId);
+    }
+    public HashMap<String, HashMap<String, Object>> getHashMapData() {
+        return hashMapData;
     }
 
     public CustomTitle translatable(String message) {

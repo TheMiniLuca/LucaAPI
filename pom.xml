@@ -44,9 +44,10 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.github.theminiluca.sql</groupId>
-            <artifactId>SQLiteManager</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>io.github.theminiluca</groupId>
+            <artifactId>RapidObjectDB</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>

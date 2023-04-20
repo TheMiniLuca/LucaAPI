@@ -3,7 +3,6 @@ package io.github.theminiluca.api.utils;
 import com.mojang.authlib.properties.Property;
 import io.github.theminiluca.api.LucaAPI;
 import io.github.theminiluca.api.event.ArmorType;
-import io.github.theminiluca.sql.SQLObject;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -19,20 +18,14 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.util.io.BukkitObjectInputStream;
-import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.*;
 
 
-public class ItemExtension extends ItemStack implements SQLObject {
+public class ItemExtension extends ItemStack implements Serializable {
 
     public static @NotNull ItemExtension item(final ItemStack itemStack) {
         ItemStack is = (itemStack == null ? newAirItem() : itemStack);
@@ -48,25 +41,6 @@ public class ItemExtension extends ItemStack implements SQLObject {
 
     private ItemExtension(final Material material) {
         super(material);
-    }
-
-    public @NotNull String asBase64() throws Exception {
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-             BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream)) {
-            dataOutput.writeObject(new ItemStack(this));
-            return new String(Base64Coder.encode(outputStream.toByteArray()));
-        } catch (Exception exception) {
-            throw new Exception(exception);
-        }
-    }
-
-    public static @Nullable ItemStack decode(@NotNull String base64) throws Exception {
-        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decode(base64));
-             BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream)) {
-            return (ItemStack) dataInput.readObject();
-        } catch (Exception exception) {
-            throw new Exception(exception);
-        }
     }
 
 
@@ -86,7 +60,6 @@ public class ItemExtension extends ItemStack implements SQLObject {
     public boolean hasDisplayName() {
         return !getDisplayName().isEmpty();
     }
-
     public boolean hasLore() {
         return !getLore().isEmpty();
     }
@@ -110,6 +83,7 @@ public class ItemExtension extends ItemStack implements SQLObject {
     public @NotNull String getDisplayName() {
         return getItemMeta() != null && getItemMeta().hasDisplayName() ? getItemMeta().getDisplayName() : "";
     }
+
 
 
     public @NotNull ItemExtension addLore(final List<String> args) {
@@ -190,7 +164,6 @@ public class ItemExtension extends ItemStack implements SQLObject {
         setItemMeta(im);
         return this;
     }
-
     public @NotNull ItemExtension setDisplayMeta(final String... args) {
         setDisplayName(args[0]);
         setLore(Arrays.copyOfRange(args, 1, args.length));
@@ -240,7 +213,6 @@ public class ItemExtension extends ItemStack implements SQLObject {
     public boolean isBow() {
         return getType().equals(Material.BOW);
     }
-
     public boolean isWool() {
         return getType().name().contains("WOOL");
     }
@@ -248,7 +220,6 @@ public class ItemExtension extends ItemStack implements SQLObject {
     public boolean isTerracotta() {
         return getType().name().contains("TERRACOTTA");
     }
-
     public boolean isGlass() {
         return getType().name().contains("GRASS");
     }
@@ -259,7 +230,6 @@ public class ItemExtension extends ItemStack implements SQLObject {
                 || getType().name().contains("SHOVEL")
                 || getType().name().contains("HOE");
     }
-
     public ItemExtension setColor(Color color) {
         if (this.isLeather()) {
             LeatherArmorMeta im = (LeatherArmorMeta) getItemMeta();
@@ -329,6 +299,7 @@ public class ItemExtension extends ItemStack implements SQLObject {
     }
 
 
+
     //    public static String extractKitName(final ItemStack is) {
 //        if (is.getItemMeta() == null) return "";
 //        if (!is.getItemMeta().hasDisplayName()) return "";
@@ -389,7 +360,6 @@ public class ItemExtension extends ItemStack implements SQLObject {
     public static ItemExtension newWhitePane() {
         return new ItemExtension(Material.WHITE_STAINED_GLASS_PANE).clearDisplayName();
     }
-
     public static ItemExtension newGrayPane() {
         return new ItemExtension(Material.GRAY_STAINED_GLASS_PANE).clearDisplayName();
     }
@@ -401,7 +371,6 @@ public class ItemExtension extends ItemStack implements SQLObject {
         if (!Objects.requireNonNull(v.getItemMeta()).hasDisplayName()) return false;
         return v.getItemMeta().getDisplayName().equals(name);
     }
-
     public static boolean containsDisplayName(final ItemStack v, final String name) {
         if (v == null) return false;
         if (v.getType().equals(Material.AIR)) return false;
@@ -422,7 +391,6 @@ public class ItemExtension extends ItemStack implements SQLObject {
     public NBTTagCompound getNBTTag() {
         return LucaAPI.nmsHandler.getNBTTag(this);
     }
-
     public Property getProperty() {
         Field field = null;
         try {
@@ -441,7 +409,6 @@ public class ItemExtension extends ItemStack implements SQLObject {
             throw new RuntimeException(e);
         }
     }
-
     @SuppressWarnings("unchecked")
     private Map<String, NBTBase> getNBT(NBTTagCompound tag) {
         Field field = null;

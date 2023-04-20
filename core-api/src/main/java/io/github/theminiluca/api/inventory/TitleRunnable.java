@@ -1,19 +1,16 @@
 package io.github.theminiluca.api.inventory;
 
+import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public abstract class InputRunnable implements RunnableInput {
+public abstract class TitleRunnable {
 
-    public abstract void start(String uniqueId, String... args);
+    public void interact(InventoryInteractEvent event) {
 
-
-    public void running(String uniqueId, String... args) {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                start(uniqueId, args);
-            }
-        }.run();
     }
+
+
+    public abstract void view(String uniqueId, String... args);
+
 
 }

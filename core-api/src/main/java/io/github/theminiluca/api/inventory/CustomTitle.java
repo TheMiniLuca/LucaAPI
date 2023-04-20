@@ -1,21 +1,29 @@
 package io.github.theminiluca.api.inventory;
 
 import org.bukkit.Bukkit;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.inventory.Inventory;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class CustomTitle {
     public static final Set<CustomTitle> titles = new HashSet<>();
-    private String title;
-    public final HashMap<String, Integer> page = new HashMap<>();
-    public final HashMap<String, Object> data = new HashMap<>();
-    public final HashMap<String, HashMap<String, Object>> hashMapData = new HashMap<>();
-    public InputRunnable runnables;
+    private final String title;
+    public final Map<String, Integer> page = new HashMap<>();
+    public final Map<String, Object> data = new HashMap<>();
+    public final Map<String, Map<String, Object>> hashMapData = new HashMap<>();
 
+    public TitleRunnable runnable;
+
+
+    public static void interactEvent(InventoryClickEvent event) {
+        final CustomTitle title = customtitle(event.getView().getTitle());
+        titles.forEach(customTitle -> {
+            if (title.contains(customTitle))
+                customTitle.runnable.interact(event);
+        });
+    }
 
     private final boolean flag;
 
@@ -31,8 +39,8 @@ public class CustomTitle {
         titles.add(this);
     }
 
-    public void run(String uniqueId, String... args) {
-        runnables.running(uniqueId, args);
+    public void view(String uniqueId, String... args) {
+        runnable().view(uniqueId, args);
     }
 
     public int getPage(String uniqueId, int defaults) {
@@ -48,13 +56,15 @@ public class CustomTitle {
         }
         return data.get(uniqueId);
     }
-    public HashMap<String, HashMap<String, Object>> getHashMapData() {
+
+    public Map<String, HashMap<String, Object>> getHashMapData() {
         return hashMapData;
     }
 
     public CustomTitle translatable(String message) {
         return new CustomTitle(message);
     }
+
     public boolean flag() {
         return flag;
     }

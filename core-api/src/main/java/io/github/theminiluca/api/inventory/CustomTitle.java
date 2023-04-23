@@ -1,28 +1,50 @@
 package io.github.theminiluca.api.inventory;
 
-import org.bukkit.Bukkit;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryInteractEvent;
-import org.bukkit.inventory.Inventory;
+import io.github.theminiluca.api.event.impl.InventoryActionEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
-public class CustomTitle {
+public abstract class CustomTitle implements Cloneable {
+
+    public enum SortMethod {
+        LATEST("최신"),
+        OLDEST("최고");
+
+        public final String display;
+
+        SortMethod(String display) {
+            this.display = display;
+        }
+    }
     public static final Set<CustomTitle> titles = new HashSet<>();
-    private final String title;
+    private String title;
     public final Map<String, Integer> page = new HashMap<>();
     public final Map<String, Object> data = new HashMap<>();
     public final Map<String, Map<String, Object>> hashMapData = new HashMap<>();
 
-    public TitleRunnable runnable;
+    public final Map<ItemStack, String> itemMap = new HashMap<>();
 
 
-    public static void interactEvent(InventoryClickEvent event) {
-        final CustomTitle title = customtitle(event.getView().getTitle());
-        titles.forEach(customTitle -> {
-            if (title.contains(customTitle))
-                customTitle.runnable.interact(event);
-        });
+    public void interact(InventoryActionEvent event) {
+
+    }
+
+    public void close(InventoryCloseEvent event) {
+
+    }
+
+    public abstract void view(String uniqueId, String... args);
+
+    public static void clickEvent(InventoryActionEvent event) {
+        final CustomTitle title = valueOf(event.getView().getTitle());
+        title.interact(event);
+    }
+
+    public static void closeEvent(InventoryCloseEvent event) {
+        final CustomTitle title = valueOf(event.getView().getTitle());
+        title.close(event);
     }
 
     private final boolean flag;
@@ -30,18 +52,10 @@ public class CustomTitle {
     public CustomTitle(String title, boolean flag) {
         this.title = title;
         this.flag = flag;
-        titles.add(this);
+        if (!flag)
+            titles.add(this);
     }
 
-    public CustomTitle(String title) {
-        this.title = title;
-        this.flag = false;
-        titles.add(this);
-    }
-
-    public void view(String uniqueId, String... args) {
-        runnable().view(uniqueId, args);
-    }
 
     public int getPage(String uniqueId, int defaults) {
         if (!page.containsKey(uniqueId)) {
@@ -57,12 +71,13 @@ public class CustomTitle {
         return data.get(uniqueId);
     }
 
-    public Map<String, HashMap<String, Object>> getHashMapData() {
+    public Map<String, Map<String, Object>> getHashMapData() {
         return hashMapData;
     }
 
     public CustomTitle translatable(String message) {
-        return new CustomTitle(message);
+        this.title = message;
+        return this;
     }
 
     public boolean flag() {
@@ -73,15 +88,16 @@ public class CustomTitle {
         return title;
     }
 
-    public final boolean contains(CustomTitle title) {
+    private final boolean contains(CustomTitle title) {
         return this.title().contains(title.title());
     }
 
     public final CustomTitle append(String name, boolean forward) {
         if (!forward)
-            return new CustomTitle(this.title + " " + name);
+            this.title = this.title + " " + name;
         else
-            return new CustomTitle((name + " " + this.title));
+            this.title = name + " " + this.title;
+        return this;
     }
 
     public final CustomTitle append(String name) {
@@ -89,31 +105,41 @@ public class CustomTitle {
     }
 
 
-    public final String extract(CustomTitle title) {
+    public final String extract() {
         String temp = this.title();
-        temp = temp.replace(title.title(), "");
+        temp = temp.replace(this.title(), "");
 
         return temp;
     }
 
-    public final String extract_1(CustomTitle title) {
+    public final String extract_1() {
         String temp = this.title();
-        temp = temp.replace(" " + title.title(), "");
+        temp = temp.replace(" " + this.title(), "");
 
         return temp;
     }
 
-    public static CustomTitle customtitle(String name) {
-        return new CustomTitle(name);
+    public static CustomTitle valueOf(String title) {
+        for (CustomTitle customTitle : titles) {
+            if (customTitle.title.contains(title))
+                return customTitle;
+        }
+        throw new NullPointerException("존재 하지 않는 커스텀 타이틀");
+    }
+
+    public static CustomTitle valueOf(Class<? extends CustomTitle> clazz) {
+        for (CustomTitle customTitle : titles) {
+            if (customTitle.getClass().equals(clazz))
+                return customTitle;
+        }
+        throw new NullPointerException("존재 하지 않는 커스텀 타이틀");
     }
 
     @Override
-    public final boolean equals(Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         CustomTitle that = (CustomTitle) o;
-
         return Objects.equals(title, that.title);
     }
 
@@ -129,8 +155,23 @@ public class CustomTitle {
                 '}';
     }
 
-    public static Inventory createInventory(CustomTitle title, int line) {
-        return Bukkit.createInventory(null, Math.min(line, 6) * 9, title.title());
+    public GUI createGUI(int line) {
+        return new CraftGUI(this, line);
     }
 
+    @Deprecated
+    public GUI createInventory(int line) {
+        return new CraftGUI(this, line);
+    }
+
+
+    @Override
+    public CustomTitle clone() {
+        try {
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return (CustomTitle) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

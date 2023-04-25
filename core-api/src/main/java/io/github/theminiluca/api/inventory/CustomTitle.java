@@ -1,9 +1,11 @@
 package io.github.theminiluca.api.inventory;
 
 import io.github.theminiluca.api.event.impl.InventoryActionEvent;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Constructor;
 import java.util.*;
 
 public abstract class CustomTitle implements Cloneable {
@@ -18,11 +20,16 @@ public abstract class CustomTitle implements Cloneable {
             this.display = display;
         }
     }
-    public static final Set<CustomTitle> titles = new HashSet<>();
+
+    public static <T extends CustomTitle> void registerGUI(T customTitle) {
+        titles.put(customTitle.getClass().getName(), customTitle);
+    }
+
+    public static final Map<String, CustomTitle> titles = new HashMap<>();
     private String title;
-    public final Map<String, Integer> page = new HashMap<>();
-    public final Map<String, Object> data = new HashMap<>();
-    public final Map<String, Map<String, Object>> hashMapData = new HashMap<>();
+    public final Map<UUID, Integer> page = new HashMap<>();
+    public final Map<UUID, Object> data = new HashMap<>();
+    public final Map<UUID, Map<String, Object>> hashMapData = new HashMap<>();
 
     public final Map<ItemStack, String> itemMap = new HashMap<>();
 
@@ -35,7 +42,7 @@ public abstract class CustomTitle implements Cloneable {
 
     }
 
-    public abstract void view(String uniqueId, String... args);
+    public abstract void view(UUID uniqueId, String... args);
 
     public static void clickEvent(InventoryActionEvent event) {
         final CustomTitle title = valueOf(event.getView().getTitle());
@@ -47,41 +54,32 @@ public abstract class CustomTitle implements Cloneable {
         title.close(event);
     }
 
-    private final boolean flag;
-
-    public CustomTitle(String title, boolean flag) {
+    public CustomTitle(String title) {
         this.title = title;
-        this.flag = flag;
-        if (!flag)
-            titles.add(this);
     }
 
 
-    public int getPage(String uniqueId, int defaults) {
+    public int getPage(UUID uniqueId, int defaults) {
         if (!page.containsKey(uniqueId)) {
             page.put(uniqueId, defaults);
         }
         return page.get(uniqueId);
     }
 
-    public Object getData(String uniqueId, Object defaults) {
+    public Object getData(UUID uniqueId, Object defaults) {
         if (!data.containsKey(uniqueId)) {
             data.put(uniqueId, defaults);
         }
         return data.get(uniqueId);
     }
 
-    public Map<String, Map<String, Object>> getHashMapData() {
+    public Map<UUID, Map<String, Object>> getHashMapData() {
         return hashMapData;
     }
 
     public CustomTitle translatable(String message) {
         this.title = message;
         return this;
-    }
-
-    public boolean flag() {
-        return flag;
     }
 
     public String title() {
@@ -119,8 +117,14 @@ public abstract class CustomTitle implements Cloneable {
         return temp;
     }
 
+    public boolean otherCondition(Player player) {
+        return true;
+    };
+
+
+
     public static CustomTitle valueOf(String title) {
-        for (CustomTitle customTitle : titles) {
+        for (CustomTitle customTitle : titles.values()) {
             if (customTitle.title.contains(title))
                 return customTitle;
         }
@@ -128,11 +132,10 @@ public abstract class CustomTitle implements Cloneable {
     }
 
     public static CustomTitle valueOf(Class<? extends CustomTitle> clazz) {
-        for (CustomTitle customTitle : titles) {
-            if (customTitle.getClass().equals(clazz))
-                return customTitle;
-        }
-        throw new NullPointerException("존재 하지 않는 커스텀 타이틀");
+        if (titles.containsKey(clazz.getName())) {
+            return titles.get(clazz.getName());
+        } else
+            throw new NullPointerException("존재 하지 않는 커스텀 타이틀");
     }
 
     @Override

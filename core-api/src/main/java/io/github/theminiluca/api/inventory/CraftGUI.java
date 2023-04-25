@@ -19,8 +19,13 @@ public class CraftGUI implements GUI {
 
 
     public Inventory create() {
-        return Bukkit.createInventory(null, Math.min(line, 6) * 9, prefix + " " +
-                (translatable != null ? translatable : customTitle.title()));
+        if (prefix == null) {
+            return Bukkit.createInventory(null, Math.min(line, 6) * 9,
+                    (translatable != null ? translatable : customTitle.title()));
+        } else {
+            return Bukkit.createInventory(null, Math.min(line, 6) * 9, prefix + " " +
+                    (translatable != null ? translatable : customTitle.title()));
+        }
     }
 
     @Override

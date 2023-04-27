@@ -1,18 +1,18 @@
-package io.github.theminiluca.api.inventory;
+package io.github.theminiluca.api.gui;
 
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
 public class CraftGUI implements GUI {
-    public final CustomTitle customTitle;
+    public final CustomGUI customTitle;
 
     public final int line;
     public String prefix = null;
     public InventoryHolder owner = null;
     public String translatable = null;
 
-    public CraftGUI(CustomTitle customTitle, int line) {
+    public CraftGUI(CustomGUI customTitle, int line) {
         this.customTitle = customTitle;
         this.line = line;
     }

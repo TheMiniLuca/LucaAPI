@@ -4,12 +4,16 @@ import io.github.theminiluca.api.command.CommandManager;
 import io.github.theminiluca.api.utils.ConfigManager;
 import io.github.theminiluca.api.utils.NMS;
 import org.bukkit.Bukkit;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.UUID;
+
+import static io.github.theminiluca.api.utils.ItemExtension.item;
 
 public class LucaAPI {
 
@@ -22,6 +26,16 @@ public class LucaAPI {
 
     public static JavaPlugin getInstance() {
         return instance;
+    }
+
+    public static ItemStack localizedItem(String unique, ItemStack item) {
+        ItemStack itemStack = item.clone();
+        if (itemStack.getType().isAir()) throw new IllegalArgumentException("아이템은 AIR 타입이 될 수 없습니다.");
+        ItemMeta im = itemStack.getItemMeta();
+        assert im != null;
+        im.setLocalizedName(unique);
+        itemStack.setItemMeta(im);
+        return itemStack;
     }
 
 //    public static IUser multiversion(UUID uniqueId, String name, long firstJoin)  {
@@ -38,6 +52,10 @@ public class LucaAPI {
 //            throw new RuntimeException(e);
 //        }
 //    }
+
+    public static String localized(ItemStack is) {
+        return is == null || is.getType().isAir() || is.getItemMeta() == null ? null : is.getItemMeta().getLocalizedName();
+    }
 
     public void onEnable(JavaPlugin plugin) {
         LucaAPI.instance = plugin;

@@ -1,14 +1,14 @@
-package io.github.theminiluca.api.inventory;
+package io.github.theminiluca.api.gui;
 
 import io.github.theminiluca.api.event.impl.InventoryActionEvent;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.inventory.ItemStack;
 
-import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
-public abstract class CustomTitle implements Cloneable {
+public abstract class CustomGUI implements Cloneable {
 
     public enum SortMethod {
         LATEST("최신"),
@@ -21,17 +21,17 @@ public abstract class CustomTitle implements Cloneable {
         }
     }
 
-    public static <T extends CustomTitle> void registerGUI(T customTitle) {
+    public static <T extends CustomGUI> void registerGUI(T customTitle) {
         titles.put(customTitle.getClass().getName(), customTitle);
     }
 
-    public static final Map<String, CustomTitle> titles = new HashMap<>();
+    public static final Map<String, CustomGUI> titles = new HashMap<>();
     private String title;
+
     public final Map<UUID, Integer> page = new HashMap<>();
     public final Map<UUID, Object> data = new HashMap<>();
     public final Map<UUID, Map<String, Object>> hashMapData = new HashMap<>();
 
-    public final Map<ItemStack, String> itemMap = new HashMap<>();
 
 
     public void interact(InventoryActionEvent event) {
@@ -45,16 +45,19 @@ public abstract class CustomTitle implements Cloneable {
     public abstract void view(UUID uniqueId, String... args);
 
     public static void clickEvent(InventoryActionEvent event) {
-        final CustomTitle title = valueOf(event.getView().getTitle());
-        title.interact(event);
+        final CustomGUI title = valueOf(event.getView().getTitle());
+        if (title.otherCondition(event.player().getUniqueId()))
+            title.interact(event);
+
     }
 
     public static void closeEvent(InventoryCloseEvent event) {
-        final CustomTitle title = valueOf(event.getView().getTitle());
-        title.close(event);
+        final CustomGUI title = valueOf(event.getView().getTitle());
+        if (title.otherCondition(event.getPlayer().getUniqueId()))
+            title.close(event);
     }
 
-    public CustomTitle(String title) {
+    public CustomGUI(String title) {
         this.title = title;
     }
 
@@ -77,7 +80,7 @@ public abstract class CustomTitle implements Cloneable {
         return hashMapData;
     }
 
-    public CustomTitle translatable(String message) {
+    public CustomGUI translatable(String message) {
         this.title = message;
         return this;
     }
@@ -86,11 +89,11 @@ public abstract class CustomTitle implements Cloneable {
         return title;
     }
 
-    private final boolean contains(CustomTitle title) {
+    private final boolean contains(CustomGUI title) {
         return this.title().contains(title.title());
     }
 
-    public final CustomTitle append(String name, boolean forward) {
+    public final CustomGUI append(String name, boolean forward) {
         if (!forward)
             this.title = this.title + " " + name;
         else
@@ -98,7 +101,7 @@ public abstract class CustomTitle implements Cloneable {
         return this;
     }
 
-    public final CustomTitle append(String name) {
+    public final CustomGUI append(String name) {
         return append(name, false);
     }
 
@@ -117,21 +120,22 @@ public abstract class CustomTitle implements Cloneable {
         return temp;
     }
 
-    public boolean otherCondition(Player player) {
+    public boolean otherCondition(UUID uniqueId) {
         return true;
-    };
+    }
+
+    ;
 
 
-
-    public static CustomTitle valueOf(String title) {
-        for (CustomTitle customTitle : titles.values()) {
+    public static CustomGUI valueOf(String title) {
+        for (CustomGUI customTitle : titles.values()) {
             if (customTitle.title.contains(title))
                 return customTitle;
         }
         throw new NullPointerException("존재 하지 않는 커스텀 타이틀");
     }
 
-    public static CustomTitle valueOf(Class<? extends CustomTitle> clazz) {
+    public static CustomGUI valueOf(Class<? extends CustomGUI> clazz) {
         if (titles.containsKey(clazz.getName())) {
             return titles.get(clazz.getName());
         } else
@@ -142,7 +146,7 @@ public abstract class CustomTitle implements Cloneable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CustomTitle that = (CustomTitle) o;
+        CustomGUI that = (CustomGUI) o;
         return Objects.equals(title, that.title);
     }
 
@@ -169,10 +173,10 @@ public abstract class CustomTitle implements Cloneable {
 
 
     @Override
-    public CustomTitle clone() {
+    public CustomGUI clone() {
         try {
             // TODO: copy mutable state here, so the clone can't change the internals of the original
-            return (CustomTitle) super.clone();
+            return (CustomGUI) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }

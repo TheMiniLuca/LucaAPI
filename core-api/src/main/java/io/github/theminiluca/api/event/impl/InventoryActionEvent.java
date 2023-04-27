@@ -1,6 +1,6 @@
 package io.github.theminiluca.api.event.impl;
 
-import io.github.theminiluca.api.inventory.CustomTitle;
+import io.github.theminiluca.api.gui.CustomGUI;
 import io.github.theminiluca.api.utils.ItemExtension;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -36,8 +36,8 @@ public class InventoryActionEvent extends InventoryClickEvent {
         return player().getUniqueId();
     }
 
-    public CustomTitle title() {
-        return CustomTitle.valueOf(getView().getTitle());
+    public CustomGUI title() {
+        return CustomGUI.valueOf(getView().getTitle());
     }
 
     @NotNull

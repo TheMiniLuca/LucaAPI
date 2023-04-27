@@ -1,4 +1,4 @@
-package io.github.theminiluca.api.inventory;
+package io.github.theminiluca.api.gui;
 
 import org.bukkit.inventory.Inventory;
 

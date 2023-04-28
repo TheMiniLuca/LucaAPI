@@ -1,6 +1,8 @@
 package io.github.theminiluca.api;
 
 import io.github.theminiluca.api.command.CommandManager;
+import io.github.theminiluca.api.event.ArmorListener;
+import io.github.theminiluca.api.event.DispenserArmorListener;
 import io.github.theminiluca.api.utils.ConfigManager;
 import io.github.theminiluca.api.utils.NMS;
 import org.bukkit.Bukkit;
@@ -72,6 +74,8 @@ public class LucaAPI {
             throw new RuntimeException(e);
         }
         CommandManager.loadCommands();
+        Bukkit.getServer().getPluginManager().registerEvents(new ArmorListener(), instance);
+        Bukkit.getServer().getPluginManager().registerEvents(new DispenserArmorListener(), instance);
 //        new BukkitListener(getInstance());
         new ConfigManager(getInstance()).setup();
     }

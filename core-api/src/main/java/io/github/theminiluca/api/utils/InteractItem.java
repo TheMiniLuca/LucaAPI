@@ -21,7 +21,7 @@ public abstract class InteractItem {
         return interactItems.get(unique);
     }
 
-    public static InteractItem getInteract(Class<? extends InteractItem> clazz) {
+    public static InteractItem getInteract(@NotNull Class<? extends InteractItem> clazz) {
         try {
             return clazz.getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
@@ -31,15 +31,17 @@ public abstract class InteractItem {
     }
 
 
-    public static void interactEvent(PlayerInteractEvent event) {
+    public static void interactEvent(@NotNull PlayerInteractEvent event) {
         ItemStack is = event.getPlayer().getInventory().getItemInMainHand();
         if (is.getType().isAir()) return;
-        InteractItem interactItem = getInteract(interactItems.getOrDefault(localized(is), null));
+        Class<? extends InteractItem> interact = interactItems.getOrDefault(localized(is), null);
+        if (interact == null) return;
+        InteractItem interactItem = getInteract(interact);
         if (interactItem != null && interactItem.otherCondition(event.getPlayer().getUniqueId()))
             interactItem.interact(event);
     }
 
-    public static <T extends InteractItem> void registerInteract(T interactItem) {
+    public static <T extends InteractItem> void registerInteract(@NotNull T interactItem) {
         interactItems.put(interactItem.unique(), interactItem.getClass());
     }
 

@@ -9,8 +9,9 @@ import java.util.regex.Pattern;
 
 public final class Colour {
 
-    private static final Pattern pattern = Pattern.compile("&#[a-fA-F0-9]{6}");
-    private static final Pattern defaults = Pattern.compile("&[0-9a-fA-F]");
+    private static final Pattern hexcode = Pattern.compile("&#[a-fA-F0-9]{6}");
+    private static final Pattern pattern = Pattern.compile("&([0-9a-fA-F]|#[a-fA-F0-9]{6})");
+    private static final Pattern minecraft = Pattern.compile("&[0-9a-fA-F]");
 
     public static final String BLACK = ChatColor.BLACK.toString();
     public static final String DARK_BLUE = ChatColor.DARK_BLUE.toString();
@@ -44,19 +45,40 @@ public final class Colour {
     }
 
     public static String format(String msg) {
-        Matcher patternC = pattern.matcher(msg);
+        Matcher patternC = hexcode.matcher(msg);
         while (patternC.find()) {
             String color = msg.substring(patternC.start(), patternC.end());
             msg = msg.replace(color, ChatColor.of(color.replace("&#", "")).toString());
-            patternC = pattern.matcher(msg);
+            patternC = hexcode.matcher(msg);
         }
-        Matcher defaultsC = defaults.matcher(msg);
+        Matcher defaultsC = minecraft.matcher(msg);
         while (defaultsC.find()) {
             String color = msg.substring(defaultsC.start(), defaultsC.end());
             msg = msg.replace(color, ChatColor.getByChar(color.replace("&", "").charAt(0)).toString());
-            defaultsC = defaults.matcher(msg);
+            defaultsC = minecraft.matcher(msg);
         }
         return msg;
+    }
+
+    public static ChatColor getLastColour(String colour) {
+        Matcher matcher = pattern.matcher(colour);
+
+        String lastValue = null;
+        while (matcher.find()) {
+            lastValue = matcher.group();
+        }
+        if (lastValue == null) return null;
+        String chatChar = lastValue.replace("&", "");
+        ChatColor chatColor;
+        if (chatChar.length() == 1)
+            chatColor = ChatColor.getByChar(chatChar.charAt(0));
+        else
+            chatColor = ChatColor.of(chatChar);
+        return chatColor;
+    }
+
+    public org.bukkit.ChatColor getLastColor() {
+        return null;
     }
 
     public static String formatted(String msg) {

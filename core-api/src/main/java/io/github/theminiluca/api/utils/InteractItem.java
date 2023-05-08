@@ -1,6 +1,7 @@
 package io.github.theminiluca.api.utils;
 
 import io.github.theminiluca.api.LucaAPI;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;

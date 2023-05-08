@@ -1,12 +1,16 @@
 package io.github.theminiluca.api.gui;
 
+import io.github.theminiluca.api.LucaAPI;
 import io.github.theminiluca.api.event.impl.InventoryActionEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
+import java.nio.Buffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Function;
 
 public abstract class CustomGUI implements Cloneable {
 
@@ -42,17 +46,23 @@ public abstract class CustomGUI implements Cloneable {
 
     }
 
-    public abstract void view(UUID uniqueId, String... args);
+    public final void view(UUID uniqueId, String... args) {
+        Bukkit.getScheduler().runTask(LucaAPI.instance, () -> {
+            _view(uniqueId, args);
+        });
+    }
 
-    public static void clickEvent(InventoryActionEvent event) {
-        final CustomGUI title = valueOf(event.getView().getTitle());
+    protected abstract void _view(UUID uniqueId, String... args);
+
+    public static void clickEvent(InventoryActionEvent event, Function<String, String> map) {
+        final CustomGUI title = valueOf(event.getView().getTitle(), map);
         if (title.otherCondition(event.player().getUniqueId()))
             title.interact(event);
 
     }
 
-    public static void closeEvent(InventoryCloseEvent event) {
-        final CustomGUI title = valueOf(event.getView().getTitle());
+    public static void closeEvent(InventoryCloseEvent event, Function<String, String> map) {
+        final CustomGUI title = valueOf(event.getView().getTitle(), map);
         if (title.otherCondition(event.getPlayer().getUniqueId()))
             title.close(event);
     }
@@ -106,15 +116,15 @@ public abstract class CustomGUI implements Cloneable {
     }
 
 
-    public final String extract() {
-        String temp = this.title();
+    public final String extract(InventoryActionEvent event) {
+        String temp = event.getView().getTitle();
         temp = temp.replace(this.title(), "");
 
         return temp;
     }
 
-    public final String extract_1() {
-        String temp = this.title();
+    public final String extract_1(InventoryActionEvent event) {
+        String temp = event.getView().getTitle();
         temp = temp.replace(" " + this.title(), "");
 
         return temp;
@@ -128,8 +138,12 @@ public abstract class CustomGUI implements Cloneable {
 
 
     public static CustomGUI valueOf(String title) {
+        return valueOf(title, Function.identity());
+    }
+
+    public static CustomGUI valueOf(String title, Function<String, String> fun) {
         for (CustomGUI customTitle : titles.values()) {
-            if (customTitle.title.contains(title))
+            if (title.contains(fun.apply(customTitle.title)))
                 return customTitle;
         }
         throw new NullPointerException("존재 하지 않는 커스텀 타이틀");

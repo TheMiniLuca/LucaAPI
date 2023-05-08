@@ -25,11 +25,11 @@ public class LanguageManager {
     }
 
 
-    public static String getLanguage(String language, String propertiesKey) throws NullPointerException{
+    public static String getLanguage(String language, String propertiesKey) throws NullPointerException {
         return LANGUAGE_MESSAGES.get(language).get(propertiesKey);
     }
 
-    public static String getLanguageColor(String language, String propertiesKey) throws NullPointerException{
+    public static String getLanguageColor(String language, String propertiesKey) throws NullPointerException {
         return Colour.format(getLanguage(language, propertiesKey));
     }
 
@@ -64,7 +64,8 @@ public class LanguageManager {
                 e.printStackTrace();
                 continue;
             }
-            LANGUAGE_MESSAGES.put(lang, new HashMap<>());
+            if (!LANGUAGE_MESSAGES.containsKey(lang))
+                LANGUAGE_MESSAGES.put(lang, new HashMap<>());
             properties.forEach((k, v) -> LANGUAGE_MESSAGES.get(lang).put(k.toString(), v.toString()));
         }
     }

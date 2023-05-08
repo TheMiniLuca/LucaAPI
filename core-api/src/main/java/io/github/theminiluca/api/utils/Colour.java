@@ -48,7 +48,7 @@ public final class Colour {
         Matcher patternC = hexcode.matcher(msg);
         while (patternC.find()) {
             String color = msg.substring(patternC.start(), patternC.end());
-            msg = msg.replace(color, ChatColor.of(color.replace("&#", "")).toString());
+            msg = msg.replace(color, ChatColor.of(color.replace("&", "")).toString());
             patternC = hexcode.matcher(msg);
         }
         Matcher defaultsC = minecraft.matcher(msg);
@@ -77,8 +77,16 @@ public final class Colour {
         return chatColor;
     }
 
-    public org.bukkit.ChatColor getLastColor() {
-        return null;
+    public static org.bukkit.ChatColor getLastColor(String colour) {
+        Matcher matcher = pattern.matcher(colour);
+
+        String lastValue = null;
+        while (matcher.find()) {
+            lastValue = matcher.group();
+        }
+        if (lastValue == null) return null;
+        String chatChar = lastValue.replace("&", "");
+        return org.bukkit.ChatColor.getByChar(chatChar.charAt(0));
     }
 
     public static String formatted(String msg) {

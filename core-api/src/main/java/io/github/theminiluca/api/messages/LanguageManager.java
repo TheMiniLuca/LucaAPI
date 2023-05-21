@@ -11,7 +11,7 @@ public class LanguageManager {
 
     private static final LinkedHashSet<String> SUPPORT_LANGUAGE = new LinkedHashSet<>();
 
-    private static final Map<String, Map<String, String>> LANGUAGE_MESSAGES = new HashMap<>();
+    public static final Map<String, Map<String, String>> LANGUAGE_MESSAGES = new HashMap<>();
 
     public static String TRANSLATION_PATH = "messages/";
 

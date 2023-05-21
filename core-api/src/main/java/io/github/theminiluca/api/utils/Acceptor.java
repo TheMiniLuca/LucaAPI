@@ -10,6 +10,6 @@ public abstract class Acceptor<T> implements Runnable {
     public abstract T getValue();
 
     public void run() {
-        this.consumer.accept(this.getValue());
+        new Thread(() -> this.consumer.accept(this.getValue())).start();
     }
 }

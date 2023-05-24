@@ -1,6 +1,7 @@
 package io.github.theminiluca.api.utils;
 
 import io.github.theminiluca.api.LucaAPI;
+import io.github.theminiluca.api.event.impl.InventoryActionEvent;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -42,6 +43,16 @@ public abstract class InteractItem {
             interactItem.interact(event);
     }
 
+    public static void interactActionEvent(@NotNull InventoryActionEvent event) {
+        ItemStack is = event.currentItem();
+        if (is.getType().isAir()) return;
+        Class<? extends InteractItem> interact = interactItems.getOrDefault(localized(is), null);
+        if (interact == null) return;
+        InteractItem interactItem = getInteract(interact);
+        if (interactItem != null && interactItem.otherCondition(event.player().getUniqueId()))
+            interactItem.interactInventory(event);
+    }
+
     public static <T extends InteractItem> void registerInteract(@NotNull T interactItem) {
         interactItems.put(interactItem.unique(), interactItem.getClass());
     }
@@ -55,6 +66,9 @@ public abstract class InteractItem {
     public abstract @NotNull String unique();
 
     public abstract void interact(PlayerInteractEvent event);
+    public void interactInventory(InventoryActionEvent event) {
+
+    };
 
     public boolean otherCondition(UUID uniqueId) {
         return true;

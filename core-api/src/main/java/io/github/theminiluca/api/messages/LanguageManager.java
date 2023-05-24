@@ -44,13 +44,12 @@ public class LanguageManager {
         return s;
     }
 
-    public Plugin plugin;
 
-    public LanguageManager(Plugin plugin) {
-        this.plugin = plugin;
+    public LanguageManager() {
+
     }
 
-    public void setup() {
+    public void setup(Plugin plugin) {
         File def = new File(plugin.getDataFolder().toString());
         if (!def.exists()) def.mkdir();
         Properties properties = new Properties();

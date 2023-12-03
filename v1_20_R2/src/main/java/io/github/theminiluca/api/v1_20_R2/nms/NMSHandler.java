@@ -1,4 +1,4 @@
-package io.github.theminiluca.api.v1_20_R1.nms;
+package io.github.theminiluca.api.v1_20_R2.nms;
 
 import io.github.theminiluca.api.messages.ComponentText;
 import io.github.theminiluca.api.utils.NMS;
@@ -8,24 +8,22 @@ import net.md_5.bungee.api.chat.hover.content.Item;
 import net.minecraft.core.BlockPosition;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.chat.IChatBaseComponent;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.PacketPlayOutBlockChange;
 import net.minecraft.network.protocol.game.PacketPlayOutOpenSignEditor;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.TileEntitySign;
 import net.minecraft.world.level.block.state.IBlockData;
-import org.bukkit.craftbukkit.v1_20_R1.block.CraftSign;
-import org.bukkit.craftbukkit.v1_20_R1.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_20_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_20_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_20_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.concurrent.CompletableFuture;
 
-import static org.bukkit.Bukkit.getPlayer;
-
 public class NMSHandler implements NMS {
-
 
     @Override
     public ComponentText hoverItem(ComponentText text, ItemStack stack) {
@@ -38,25 +36,12 @@ public class NMSHandler implements NMS {
         return text;
     }
 
-    public void {
-        Player player = getPlayer();
-
-        final BlockPosition blockPosition = new BlockPosition(player.getLocation().getBlockX(), 1, player.getLocation().getBlockZ());
-        IBlockData signData = Blocks.cE.n();
-        PacketPlayOutBlockChange packet = new PacketPlayOutBlockChange(blockPosition, signData);
-        sendPacket(packet);
-        IChatBaseComponent[] ComponentTexts = CraftSign.sanitizeLines(withLines);
-        TileEntitySign sign = new TileEntitySign(blockPosition, signData);
-        for (var i = 0; i < ComponentTexts.length; i++)
-            sign.a(ComponentTexts[i]);
-        sendPacket(sign.h());
-        callback = new CompletableFuture<>();
-        PacketPlayOutOpenSignEditor outOpenSignEditor = new PacketPlayOutOpenSignEditor(blockPosition, true);
-        sendPacket(outOpenSignEditor);
-        return callback;
+    public CompletableFuture<String[]> scanner(String[] withLines) {
+        Player player;
+        Packet packet;
+        ((CraftPlayer) player).getHandle().c.a(packet);
+        return;
     }
-
-
     @Override
     public NBTTagCompound getNBTTag(ItemStack itemStack) {
         return CraftItemStack.asNMSCopy(itemStack).v();

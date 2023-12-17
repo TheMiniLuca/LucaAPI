@@ -36,12 +36,6 @@ public class NMSHandler implements NMS {
         return text;
     }
 
-    public CompletableFuture<String[]> scanner(String[] withLines) {
-        Player player;
-        Packet packet;
-        ((CraftPlayer) player).getHandle().c.a(packet);
-        return;
-    }
     @Override
     public NBTTagCompound getNBTTag(ItemStack itemStack) {
         return CraftItemStack.asNMSCopy(itemStack).v();

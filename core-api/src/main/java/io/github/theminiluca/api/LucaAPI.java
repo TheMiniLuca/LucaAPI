@@ -5,20 +5,12 @@ import io.github.theminiluca.api.event.ArmorListener;
 import io.github.theminiluca.api.event.DispenserArmorListener;
 import io.github.theminiluca.api.utils.ConfigManager;
 import io.github.theminiluca.api.utils.NMS;
-import net.minecraft.network.protocol.game.PacketPlayOutOpenSignEditor;
-import net.minecraft.world.level.block.entity.TileEntitySign;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.UUID;
-
-import static io.github.theminiluca.api.utils.ItemExtension.item;
 
 public class LucaAPI {
 
@@ -76,7 +68,7 @@ public class LucaAPI {
                  NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
-        CommandManager.loadCommands();
+        CommandManager.loadCommands(plugin);
         Bukkit.getServer().getPluginManager().registerEvents(new ArmorListener(), instance);
         Bukkit.getServer().getPluginManager().registerEvents(new DispenserArmorListener(), instance);
 //        new BukkitListener(getInstance());

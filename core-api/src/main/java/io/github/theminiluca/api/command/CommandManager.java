@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,9 +24,9 @@ public class CommandManager implements org.bukkit.command.CommandExecutor, TabCo
     }
 
     @SuppressWarnings("unchecked")
-    public static void loadCommands() {
+    public static void loadCommands(Plugin javaplugin) {
         CommandManager cmd = new CommandManager();
-        PluginDescriptionFile plugin = LucaAPI.getInstance().getDescription();
+        PluginDescriptionFile plugin = javaplugin.getDescription();
         for (Map.Entry<String, Map<String, Object>> command : plugin.getCommands().entrySet()) {
             setCommand(command.getKey(), cmd);
             if (command.getValue().containsKey("aliases")) {

@@ -34,7 +34,7 @@ public class CommandManager implements org.bukkit.command.CommandExecutor, TabCo
     }
 
     @SuppressWarnings("unchecked")
-    public static void loadCommands(Plugin javaplugin) {
+    public void loadCommands(Plugin javaplugin) {
         CommandManager cmd = getInstance();
         PluginDescriptionFile plugin = javaplugin.getDescription();
         for (Map.Entry<String, Map<String, Object>> command : plugin.getCommands().entrySet()) {
@@ -47,7 +47,7 @@ public class CommandManager implements org.bukkit.command.CommandExecutor, TabCo
         }
     }
 
-    private static void setCommand(final String cmd, final org.bukkit.command.CommandExecutor executor) {
+    private void setCommand(final String cmd, final org.bukkit.command.CommandExecutor executor) {
         PluginCommand command = LucaAPI.getInstance().getCommand(cmd);
         if (command != null) {
             command.setExecutor(executor);

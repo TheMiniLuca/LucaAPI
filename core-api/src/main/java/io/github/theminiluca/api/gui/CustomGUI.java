@@ -54,11 +54,13 @@ public abstract class CustomGUI implements Cloneable {
 
     protected abstract void _view(UUID uniqueId, String... args);
 
-    public static void clickEvent(InventoryActionEvent event, Function<String, String> map) {
+    public static boolean clickEvent(InventoryActionEvent event, Function<String, String> map) {
         final CustomGUI title = valueOf(event.getView().getTitle(), map);
-        if (title.otherCondition(event.player().getUniqueId()))
+        if (title.otherCondition(event.player().getUniqueId())) {
             title.interact(event);
-
+            return true;
+        }
+        return false;
     }
 
     public static void closeEvent(InventoryCloseEvent event, Function<String, String> map) {

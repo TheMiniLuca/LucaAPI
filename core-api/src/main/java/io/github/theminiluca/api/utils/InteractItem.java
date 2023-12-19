@@ -33,24 +33,30 @@ public abstract class InteractItem {
     }
 
 
-    public static void interactEvent(@NotNull PlayerInteractEvent event) {
+    public static boolean interactEvent(@NotNull PlayerInteractEvent event) {
         ItemStack is = event.getPlayer().getInventory().getItemInMainHand();
-        if (is.getType().isAir()) return;
+        if (is.getType().isAir()) return false;
         Class<? extends InteractItem> interact = interactItems.getOrDefault(localized(is), null);
-        if (interact == null) return;
+        if (interact == null) return false;
         InteractItem interactItem = getInteract(interact);
-        if (interactItem != null && interactItem.otherCondition(event.getPlayer().getUniqueId()))
+        if (interactItem != null && interactItem.otherCondition(event.getPlayer().getUniqueId())) {
             interactItem.interact(event);
+            return true;
+        }
+        return false;
     }
 
-    public static void interactActionEvent(@NotNull InventoryActionEvent event) {
+    public static boolean interactActionEvent(@NotNull InventoryActionEvent event) {
         ItemStack is = event.currentItem();
-        if (is.getType().isAir()) return;
+        if (is.getType().isAir()) return false;
         Class<? extends InteractItem> interact = interactItems.getOrDefault(localized(is), null);
-        if (interact == null) return;
+        if (interact == null) return false;
         InteractItem interactItem = getInteract(interact);
-        if (interactItem != null && interactItem.otherCondition(event.player().getUniqueId()))
+        if (interactItem != null && interactItem.otherCondition(event.player().getUniqueId())) {
             interactItem.interactInventory(event);
+            return true;
+        }
+        return false;
     }
 
     public static <T extends InteractItem> void registerInteract(@NotNull T interactItem) {

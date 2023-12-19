@@ -68,7 +68,7 @@ public class LucaAPI {
                  NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
-        CommandManager.loadCommands(plugin);
+        CommandManager.getInstance().loadCommands(plugin);
         Bukkit.getServer().getPluginManager().registerEvents(new ArmorListener(), instance);
         Bukkit.getServer().getPluginManager().registerEvents(new DispenserArmorListener(), instance);
 //        new BukkitListener(getInstance());

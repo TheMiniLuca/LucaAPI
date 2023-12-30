@@ -2,28 +2,19 @@ package io.github.theminiluca.api.gui;
 
 import io.github.theminiluca.api.LucaAPI;
 import io.github.theminiluca.api.event.impl.InventoryActionEvent;
+import io.github.theminiluca.api.utils.Colour;
+import io.github.theminiluca.api.utils.ItemExtension;
+import io.github.theminiluca.api.utils.ItemGUI;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-import java.nio.Buffer;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 
 public abstract class CustomGUI implements Cloneable {
-
-    public enum SortMethod {
-        LATEST("최신"),
-        OLDEST("최고");
-
-        public final String display;
-
-        SortMethod(String display) {
-            this.display = display;
-        }
-    }
 
     public static <T extends CustomGUI> void registerGUI(T customTitle) {
         titles.put(customTitle.getClass().getName(), customTitle);
@@ -178,6 +169,14 @@ public abstract class CustomGUI implements Cloneable {
                 '}';
     }
 
+    public enum InventoryFrame {
+        EXIT_ON_CLOSE,
+        PAGE,
+        SORTED
+
+
+    }
+
     public GUI createGUI(int line) {
         return new CraftGUI(this, line);
     }
@@ -197,4 +196,9 @@ public abstract class CustomGUI implements Cloneable {
             throw new AssertionError();
         }
     }
+
+
+
+
+
 }

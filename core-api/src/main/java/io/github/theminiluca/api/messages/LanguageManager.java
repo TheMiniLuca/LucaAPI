@@ -5,6 +5,10 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 
 public class LanguageManager {
@@ -13,7 +17,8 @@ public class LanguageManager {
 
     public static final Map<String, Map<String, String>> LANGUAGE_MESSAGES = new HashMap<>();
 
-    public static String TRANSLATION_PATH = "messages/";
+    public static String TRANSLATION_RESOURCE_PATH = "messages/";
+    public static String TRANSLATION_PLUGIN_TARGET_PATH = "translations/";
 
     public static void registerLanguages(String language) {
         SUPPORT_LANGUAGE.add(language);
@@ -52,20 +57,49 @@ public class LanguageManager {
     public void setup(Plugin plugin) {
         File def = new File(plugin.getDataFolder().toString());
         if (!def.exists()) def.mkdir();
-        Properties properties = new Properties();
-        for (String lang : SUPPORT_LANGUAGE) {
-            try {
-                InputStream resource = plugin.getResource(TRANSLATION_PATH + lang + ".properties");
-                assert resource != null;
-                Reader reader = new InputStreamReader(resource, StandardCharsets.UTF_8);
-                properties.load(reader);
-            } catch (IOException e) {
-                e.printStackTrace();
-                continue;
+        File languageFile = new File(plugin.getDataFolder() +"\\\\"+ TRANSLATION_PLUGIN_TARGET_PATH);
+        if (!languageFile.exists()) {
+            languageFile.mkdir();
+            Properties properties = new Properties();
+            for (String lang : SUPPORT_LANGUAGE) {
+                try {
+                    InputStream resource = plugin.getResource(TRANSLATION_RESOURCE_PATH + lang + ".properties");
+                    assert resource != null;
+                    Reader reader = new InputStreamReader(resource, StandardCharsets.UTF_8);
+                    properties.load(reader);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    continue;
+                }
+
+                try (OutputStream output = new FileOutputStream(languageFile.getPath() +"\\\\" + lang + ".properties")) {
+                    Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+                    properties.store(writer, "My Application Configuration");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (!LANGUAGE_MESSAGES.containsKey(lang))
+                    LANGUAGE_MESSAGES.put(lang, new HashMap<>());
+                properties.forEach((k, v) -> LANGUAGE_MESSAGES.get(lang).put(k.toString(), v.toString()));
             }
-            if (!LANGUAGE_MESSAGES.containsKey(lang))
-                LANGUAGE_MESSAGES.put(lang, new HashMap<>());
-            properties.forEach((k, v) -> LANGUAGE_MESSAGES.get(lang).put(k.toString(), v.toString()));
+        } else {
+            Properties properties = new Properties();
+            for (String lang : SUPPORT_LANGUAGE) {
+                try {
+                    InputStream resource = Files.newInputStream(Path.of(
+                            plugin.getDataFolder() + File.separator + TRANSLATION_PLUGIN_TARGET_PATH + lang + ".properties")
+                            , StandardOpenOption.READ);
+                    assert resource != null;
+                    Reader reader = new InputStreamReader(resource, StandardCharsets.UTF_8);
+                    properties.load(reader);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    continue;
+                }
+                if (!LANGUAGE_MESSAGES.containsKey(lang))
+                    LANGUAGE_MESSAGES.put(lang, new HashMap<>());
+                properties.forEach((k, v) -> LANGUAGE_MESSAGES.get(lang).put(k.toString(), v.toString()));
+            }
         }
     }
 
@@ -85,5 +119,21 @@ public class LanguageManager {
         String value = properties.getProperty(key);
         if (value == null || value.isEmpty()) return "";
         return value;
+    }
+
+    public void save(Plugin plugin) {
+        for (Map.Entry<String, Map<String, String>> entry : LANGUAGE_MESSAGES.entrySet()) {
+            Properties properties = new Properties();
+            for (Map.Entry<String, String> entry1 : LANGUAGE_MESSAGES.get(entry.getKey()).entrySet()) {
+                properties.setProperty(entry1.getKey(), entry1.getValue());
+            }
+
+            try (OutputStream output = new FileOutputStream(plugin.getDataFolder() + File.separator + TRANSLATION_PLUGIN_TARGET_PATH + entry.getKey() + ".properties")) {
+                Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+                properties.store(writer, "My Application Configuration");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

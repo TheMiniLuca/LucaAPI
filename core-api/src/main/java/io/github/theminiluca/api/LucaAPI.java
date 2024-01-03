@@ -3,6 +3,7 @@ package io.github.theminiluca.api;
 import io.github.theminiluca.api.command.CommandManager;
 import io.github.theminiluca.api.event.ArmorListener;
 import io.github.theminiluca.api.event.DispenserArmorListener;
+import io.github.theminiluca.api.messages.BaseUser;
 import io.github.theminiluca.api.utils.ConfigManager;
 import io.github.theminiluca.api.utils.NMS;
 import org.bukkit.Bukkit;
@@ -11,15 +12,26 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
-public class LucaAPI {
+public abstract class LucaAPI {
 
     public static JavaPlugin instance;
+    public static LucaAPI lucaAPI;
 
     public static String version;
     public static NMS nmsHandler;
 
+    public abstract BaseUser getBaseUser(UUID uniqueId);
 
+    public LucaAPI() {
+        lucaAPI = this;
+    }
+    public static LucaAPI lucaAPI() {
+        return lucaAPI;
+    }
 
     public static JavaPlugin getInstance() {
         return instance;

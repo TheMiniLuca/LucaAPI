@@ -6,14 +6,15 @@
     <parent>
         <groupId>io.github.theminiluca.api</groupId>
         <artifactId>LucaAPI</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.1.0</version>
     </parent>
 
+    <packaging>jar</packaging>
     <artifactId>v1_20_R2</artifactId>
 
     <properties>
-        <maven.compiler.source>20</maven.compiler.source>
-        <maven.compiler.target>20</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
@@ -26,7 +27,7 @@
         <dependency>
             <groupId>io.github.theminiluca.api</groupId>
             <artifactId>core-api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

@@ -31,7 +31,8 @@ public class NMSHandler implements NMS {
         if (!nmsItem.t()) return text;
         NBTTagCompound compound = nmsItem.v();
         if (compound == null) return text;
-        text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new Item("minecraft:" + nmsItem.c().toString(),
+        text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM,
+                new Item("minecraft:" + nmsItem.c().toString(),
                 1, ItemTag.ofNbt(compound.toString()))));
         return text;
     }

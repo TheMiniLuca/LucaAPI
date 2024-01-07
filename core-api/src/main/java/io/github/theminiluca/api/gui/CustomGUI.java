@@ -4,10 +4,7 @@ import io.github.theminiluca.api.LucaAPI;
 import io.github.theminiluca.api.event.impl.InventoryActionEvent;
 import io.github.theminiluca.api.messages.BaseUser;
 import io.github.theminiluca.api.messages.LanguageManager;
-import io.github.theminiluca.api.utils.BukkitSound;
-import io.github.theminiluca.api.utils.Colour;
-import io.github.theminiluca.api.utils.ItemExtension;
-import io.github.theminiluca.api.utils.ItemGUI;
+import io.github.theminiluca.api.utils.*;
 import net.minecraft.world.level.levelgen.HeightMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -37,8 +34,10 @@ public abstract class CustomGUI {
     public int line = 0;
 
     public final Map<UUID, Integer> page = new HashMap<>();
+    public final Map<UUID, String> search = new HashMap<>();
     public final Map<UUID, Object> data = new HashMap<>();
     public final Map<UUID, Map<String, Object>> hashMapData = new HashMap<>();
+
 
 
     public void interact(InventoryActionEvent event) {
@@ -204,12 +203,13 @@ public abstract class CustomGUI {
             inv.setItem(standard + 5, sortItem(getBaseSort(uniqueId, BaseSort.LATEST)).getItem(uniqueId));
         }
         if (frames.contains(InventoryFrame.SEARCH)) {
-            inv.setItem(standard + 6, search().getItem(uniqueId));
+            inv.setItem(standard + 6, search().getItem(uniqueId, this.search.getOrDefault(uniqueId, null)));
         }
     }
 
     public boolean frameEvents(UUID uniqueId, String localized) {
         Player player = Bukkit.getPlayer(uniqueId);
+        BaseUser user = LucaAPI.lucaAPI().getBaseUser(uniqueId);
         if (player == null) throw new NullPointerException();
         int page = getPage(uniqueId, 0);
         switch (localized) {
@@ -218,16 +218,19 @@ public abstract class CustomGUI {
                 return true;
             }
             case "gui-forward" -> {
+                if (user.cooltime(user.translatable("slow.click.please"), "forward-cooltime", Duration.ofTicks(15))) return true;
                 this.page.put(uniqueId, page + 1);
                 this.view(uniqueId);
                 return true;
             }
             case "gui-back" -> {
+                if (user.cooltime(user.translatable("slow.click.please"), "back-cooltime", Duration.ofTicks(15))) return true;
                 this.page.put(uniqueId, Math.max(page - 1, 0));
                 this.view(uniqueId);
                 return true;
             }
             case "gui-sorted" -> {
+                if (user.cooltime(user.translatable("slow.click.please"), "sorted-cooltime", Duration.ofTicks(15))) return true;
                 if (getBaseSort(uniqueId, BaseSort.LATEST).equals(BaseSort.LATEST)) {
                     this.data.put(uniqueId, BaseSort.OLDEST);
                 } else {
@@ -275,7 +278,7 @@ public abstract class CustomGUI {
                 assert args[0] instanceof Integer : "0번은 Integer 값이여야합니다.";
                 BaseUser user = LucaAPI.lucaAPI().getBaseUser(uuid);
                 return ItemExtension.item(Material.ARROW).setDisplayName(user.translatable("gui.forward.name"))
-                        .addLore(Colour.WHITE + formatted(user.translatable("gui.now.page.name")));
+                        .addLore(Colour.WHITE + formatted(user.translatable("gui.now.page.name"), args[0]));
             }
         };
     }
@@ -286,7 +289,7 @@ public abstract class CustomGUI {
                 assert args[0] instanceof Integer : "0번은 Integer 값이여야합니다.";
                 BaseUser user = LucaAPI.lucaAPI().getBaseUser(uuid);
                 return ItemExtension.item(Material.ARROW).setDisplayName(user.translatable("gui.back.name"))
-                        .addLore(Colour.WHITE + formatted(user.translatable("gui.now.page.name")));
+                        .addLore(Colour.WHITE + formatted(user.translatable("gui.now.page.name"), args[0]));
             }
         };
     }
@@ -296,7 +299,8 @@ public abstract class CustomGUI {
             public @NotNull ItemStack item(UUID uuid, Object... args) {
                 assert args[0] instanceof String : "0번은 String 값이여야합니다.";
                 BaseUser user = LucaAPI.lucaAPI().getBaseUser(uuid);
-                return ItemExtension.item(Material.ACACIA_SIGN).setDisplayName(user.translatable("gui.search.name"));
+                if (args[0] == null) return ItemExtension.item(Material.ACACIA_SIGN).setDisplayName(user.translatable("gui.no.search.name"));
+                return ItemExtension.item(Material.ACACIA_SIGN).setDisplayName(formatted(user.translatable("gui.search.name"), args[0]));
             }
         };
     }

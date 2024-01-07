@@ -11,7 +11,7 @@ public final class Colour {
 
     private static final Pattern hexcode = Pattern.compile("&#[a-fA-F0-9]{6}");
     private static final Pattern pattern = Pattern.compile("&([0-9a-fA-F]|#[a-fA-F0-9]{6})");
-    private static final Pattern minecraft = Pattern.compile("&[0-9a-fA-F]");
+    private static final Pattern minecraft = Pattern.compile("&[0-9a-fA-FlnmorkKLNMOR]");
 
     public static final String BLACK = ChatColor.BLACK.toString();
     public static final String DARK_BLUE = ChatColor.DARK_BLUE.toString();
@@ -44,20 +44,30 @@ public final class Colour {
         return ChatColor.of(Color.decode("#%s".formatted(decode))).toString();
     }
 
-    public static String format(String msg) {
-        Matcher patternC = hexcode.matcher(msg);
-        while (patternC.find()) {
-            String color = msg.substring(patternC.start(), patternC.end());
+    public static String format(String msg, boolean debug) {
+        Matcher matcher = hexcode.matcher(msg);
+        while (matcher.find()) {
+            String color = matcher.group();
+            if (debug) {
+                System.out.println(color);
+            }
             msg = msg.replace(color, ChatColor.of(color.replace("&", "")).toString());
-            patternC = hexcode.matcher(msg);
+            matcher = hexcode.matcher(msg);
         }
-        Matcher defaultsC = minecraft.matcher(msg);
-        while (defaultsC.find()) {
-            String color = msg.substring(defaultsC.start(), defaultsC.end());
+        Matcher matcher1 = minecraft.matcher(msg);
+        while (matcher1.find()) {
+            String color = matcher1.group();
+            if (debug) {
+                System.out.println(color);
+            }
             msg = msg.replace(color, ChatColor.getByChar(color.replace("&", "").charAt(0)).toString());
-            defaultsC = minecraft.matcher(msg);
+            matcher1 = minecraft.matcher(msg);
         }
         return msg;
+    }
+
+    public static String format(String msg) {
+        return format(msg, false);
     }
 
     public static ChatColor getLastColour(String colour) {

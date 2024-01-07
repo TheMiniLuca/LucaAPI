@@ -14,6 +14,13 @@
         <module>v1_20_R3</module>
     </modules>
 
+    <distributionManagement>
+        <repository>
+            <id>roin</id>
+            <url>https://repo.roin.kr/#/</url>
+        </repository>
+    </distributionManagement>
+
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>

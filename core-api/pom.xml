@@ -9,6 +9,13 @@
         <version>1.1.0</version>
     </parent>
 
+    <distributionManagement>
+        <repository>
+            <id>roin</id>
+            <url>https://repo.roin.kr/#/</url>
+        </repository>
+    </distributionManagement>
+
     <packaging>jar</packaging>
     <artifactId>core-api</artifactId>
 
@@ -19,8 +26,6 @@
     </properties>
 
     <dependencies>
-
-
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>

@@ -57,50 +57,52 @@ public class LanguageManager {
     public void setup(Plugin plugin) {
         File def = new File(plugin.getDataFolder().toString());
         if (!def.exists()) def.mkdir();
-        File languageFile = new File(plugin.getDataFolder() +"\\\\"+ TRANSLATION_PLUGIN_TARGET_PATH);
+        File languageFile = new File(plugin.getDataFolder() + "\\\\" + TRANSLATION_PLUGIN_TARGET_PATH);
         if (!languageFile.exists()) {
             languageFile.mkdir();
-            Properties properties = new Properties();
-            for (String lang : SUPPORT_LANGUAGE) {
-                try {
-                    InputStream resource = plugin.getResource(TRANSLATION_RESOURCE_PATH + lang + ".properties");
-                    assert resource != null;
-                    Reader reader = new InputStreamReader(resource, StandardCharsets.UTF_8);
-                    properties.load(reader);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    continue;
-                }
-
-                try (OutputStream output = new FileOutputStream(languageFile.getPath() +"\\\\" + lang + ".properties")) {
-                    Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
-                    properties.store(writer, "My Application Configuration");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                if (!LANGUAGE_MESSAGES.containsKey(lang))
-                    LANGUAGE_MESSAGES.put(lang, new HashMap<>());
-                properties.forEach((k, v) -> LANGUAGE_MESSAGES.get(lang).put(k.toString(), v.toString()));
-            }
-        } else {
-            Properties properties = new Properties();
-            for (String lang : SUPPORT_LANGUAGE) {
-                try {
-                    InputStream resource = Files.newInputStream(Path.of(
-                            plugin.getDataFolder() + File.separator + TRANSLATION_PLUGIN_TARGET_PATH + lang + ".properties")
-                            , StandardOpenOption.READ);
-                    assert resource != null;
-                    Reader reader = new InputStreamReader(resource, StandardCharsets.UTF_8);
-                    properties.load(reader);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    continue;
-                }
-                if (!LANGUAGE_MESSAGES.containsKey(lang))
-                    LANGUAGE_MESSAGES.put(lang, new HashMap<>());
-                properties.forEach((k, v) -> LANGUAGE_MESSAGES.get(lang).put(k.toString(), v.toString()));
-            }
         }
+        for (String lang : SUPPORT_LANGUAGE) {
+            Properties properties = new Properties();
+            try {
+                String path = plugin.getDataFolder() + File.separator + TRANSLATION_PLUGIN_TARGET_PATH + lang + ".properties";
+                InputStream resource;
+                if (!new File(path).exists()) {
+                    resource = null;
+                } else {
+                    resource = Files.newInputStream(Path.of(path)
+                            , StandardOpenOption.READ);
+                }
+                if (resource == null) {
+                    try (OutputStream output = new FileOutputStream(plugin.getDataFolder() + File.separator + TRANSLATION_PLUGIN_TARGET_PATH + lang + ".properties")) {
+                        Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+                        properties.store(writer, lang);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Reader reader = new InputStreamReader(resource, StandardCharsets.UTF_8);
+                    properties.load(reader);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                continue;
+            }
+
+            try (OutputStream output = new FileOutputStream(languageFile.getPath() + "\\\\" + lang + ".properties")) {
+                Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+                properties.store(writer, lang + " RoinPvP language file");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (!LANGUAGE_MESSAGES.containsKey(lang))
+                LANGUAGE_MESSAGES.put(lang, new HashMap<>());
+
+            properties.forEach((k, v) -> {
+                System.out.println(k.toString() + " : " + v.toString());
+                LANGUAGE_MESSAGES.get(lang).put(k.toString(), v.toString());
+            });
+        }
+
     }
 
     public static String getValueFromTag(String input) {
@@ -122,18 +124,19 @@ public class LanguageManager {
     }
 
     public void save(Plugin plugin) {
-        for (Map.Entry<String, Map<String, String>> entry : LANGUAGE_MESSAGES.entrySet()) {
+        for (String lang : SUPPORT_LANGUAGE) {
             Properties properties = new Properties();
-            for (Map.Entry<String, String> entry1 : LANGUAGE_MESSAGES.get(entry.getKey()).entrySet()) {
-                properties.setProperty(entry1.getKey(), entry1.getValue());
+            for (Map.Entry<String, String> entry : LANGUAGE_MESSAGES.get(lang).entrySet()) {
+                properties.setProperty(entry.getKey(), entry.getValue());
             }
 
-            try (OutputStream output = new FileOutputStream(plugin.getDataFolder() + File.separator + TRANSLATION_PLUGIN_TARGET_PATH + entry.getKey() + ".properties")) {
+            try (OutputStream output = new FileOutputStream(plugin.getDataFolder() + File.separator + TRANSLATION_PLUGIN_TARGET_PATH + lang + ".properties")) {
                 Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
-                properties.store(writer, "My Application Configuration");
+                properties.store(writer, lang + " RoinPvP language file");
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
+
 }

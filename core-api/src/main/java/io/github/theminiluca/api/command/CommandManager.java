@@ -28,6 +28,18 @@ public class CommandManager implements org.bukkit.command.CommandExecutor, TabCo
     }
 
 
+    public static List<String> toTabComplete(List<String> list, String[] args) {
+        List<String> complete = new ArrayList<>();
+        List<String> arguments = new ArrayList<>(list);
+
+        for (String argument : arguments) {
+            if (argument.toLowerCase().startsWith(args[0].toLowerCase())) {
+                complete.add(argument);
+            }
+        }
+        return complete;
+    }
+
     public final Map<String, CommandI> LABELS = new HashMap<>();
 
     public static void register(CommandI commandLabel) {

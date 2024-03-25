@@ -4,7 +4,9 @@ import io.github.theminiluca.api.LucaAPI;
 import io.github.theminiluca.api.event.impl.InventoryActionEvent;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.entity.EntityDropItemEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
@@ -59,6 +61,45 @@ public abstract class InteractItem {
         return false;
     }
 
+    public static boolean itemDropEvent(@NotNull PlayerDropItemEvent event) {
+        ItemStack is = event.getItemDrop().getItemStack();
+        if (is.getType().isAir()) return false;
+        Class<? extends InteractItem> interact = interactItems.getOrDefault(localized(is), null);
+        if (interact == null) return false;
+        InteractItem interactItem = getInteract(interact);
+        if (interactItem != null && interactItem.otherCondition(event.getPlayer().getUniqueId())) {
+            interactItem.itemDrop(event);
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean itemPickupEvent(@NotNull EntityPickupItemEvent event) {
+        ItemStack is = event.getItem().getItemStack();
+        if (is.getType().isAir()) return false;
+        Class<? extends InteractItem> interact = interactItems.getOrDefault(localized(is), null);
+        if (interact == null) return false;
+        InteractItem interactItem = getInteract(interact);
+        if (interactItem != null && interactItem.otherCondition(event.getEntity().getUniqueId())) {
+            interactItem.itemPickup(event);
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean interactEntityEvent(@NotNull PlayerInteractEntityEvent event) {
+        ItemStack is = event.getPlayer().getInventory().getItemInMainHand();
+        if (is.getType().isAir()) return false;
+        Class<? extends InteractItem> interact = interactItems.getOrDefault(localized(is), null);
+        if (interact == null) return false;
+        InteractItem interactItem = getInteract(interact);
+        if (interactItem != null && interactItem.otherCondition(event.getPlayer().getUniqueId())) {
+            interactItem.interactEntity(event);
+            return true;
+        }
+        return false;
+    }
+
     public static <T extends InteractItem> void registerInteract(@NotNull T interactItem) {
         interactItems.put(interactItem.unique(), interactItem.getClass());
     }
@@ -72,9 +113,22 @@ public abstract class InteractItem {
     public abstract @NotNull String unique();
 
     public abstract void interact(PlayerInteractEvent event);
+
     public void interactInventory(InventoryActionEvent event) {
 
-    };
+    }
+
+    public void itemDrop(PlayerDropItemEvent event) {
+
+    }
+    public void itemPickup(EntityPickupItemEvent event) {
+
+    }
+    public void interactEntity(PlayerInteractEntityEvent event) {
+
+    }
+
+    ;
 
     public boolean otherCondition(UUID uniqueId) {
         return true;

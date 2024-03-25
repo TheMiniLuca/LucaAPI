@@ -15,6 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public abstract class LucaAPI {
 
@@ -37,8 +38,7 @@ public abstract class LucaAPI {
         return instance;
     }
 
-    public static ItemStack localizedItem(String unique, ItemStack item) {
-        ItemStack itemStack = item.clone();
+    public static ItemStack localizedItem(String unique, ItemStack itemStack) {
         if (itemStack.getType().isAir()) throw new IllegalArgumentException("아이템은 AIR 타입이 될 수 없습니다.");
         ItemMeta im = itemStack.getItemMeta();
         assert im != null;
@@ -66,6 +66,15 @@ public abstract class LucaAPI {
         return is == null || is.getType().isAir() || is.getItemMeta() == null ? null : is.getItemMeta().getLocalizedName();
     }
 
+    public static boolean isNumber(String v) {
+        try {
+            Integer.parseInt(v);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     public void onEnable(JavaPlugin plugin) {
         LucaAPI.instance = plugin;
         String packageName = Bukkit.getServer().getClass().getPackage().getName();
@@ -78,13 +87,12 @@ public abstract class LucaAPI {
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            getInstance().getLogger().log(Level.SEVERE, "nmsHandler가 작동하지 않을것입니다.");
         }
-        CommandManager.getInstance().loadCommands(plugin);
+        CommandManager.loadCommands(plugin);
         Bukkit.getServer().getPluginManager().registerEvents(new ArmorListener(), instance);
         Bukkit.getServer().getPluginManager().registerEvents(new DispenserArmorListener(), instance);
 //        new BukkitListener(getInstance());
-        new ConfigManager(getInstance()).setup();
     }
 
 }

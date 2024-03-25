@@ -67,7 +67,7 @@ public class LanguageManager {
                 String path = plugin.getDataFolder() + File.separator + TRANSLATION_PLUGIN_TARGET_PATH + lang + ".properties";
                 InputStream resource;
                 if (!new File(path).exists()) {
-                    resource = null;
+                    resource = plugin.getResource(TRANSLATION_RESOURCE_PATH);
                 } else {
                     resource = Files.newInputStream(Path.of(path)
                             , StandardOpenOption.READ);
@@ -132,7 +132,7 @@ public class LanguageManager {
 
             try (OutputStream output = new FileOutputStream(plugin.getDataFolder() + File.separator + TRANSLATION_PLUGIN_TARGET_PATH + lang + ".properties")) {
                 Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
-                properties.store(writer, lang + " RoinPvP language file");
+                properties.store(writer, lang + " language file");
             } catch (IOException e) {
                 e.printStackTrace();
             }

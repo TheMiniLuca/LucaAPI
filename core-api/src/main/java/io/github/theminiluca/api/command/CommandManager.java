@@ -1,14 +1,8 @@
 package io.github.theminiluca.api.command;
 
-import io.github.theminiluca.api.messages.ComponentText;
-import io.github.theminiluca.api.LucaAPI;
-import io.github.theminiluca.api.utils.Colour;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.TabCompleter;
+
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class CommandManager implements org.bukkit.command.CommandExecutor, TabCompleter {
+public class CommandManager implements CommandExecutor, TabCompleter {
 
     private static CommandManager instance;
 
@@ -69,31 +63,36 @@ public class CommandManager implements org.bukkit.command.CommandExecutor, TabCo
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         String label = command.getLabel();
-        if (!(commandSender instanceof Player player)) return false;
         if (LABELS.containsKey(label)) {
-            if (!(LABELS.get(label) instanceof CommandLabel executor)) {
-                NormalCommand normalCommand = (NormalCommand) LABELS.get(label);
-                normalCommand.perform(player, args);
-                return false;
+            CommandI commandI = LABELS.get(label);
+            if ((commandI instanceof ConsoleCommand consoleCommand)) {
+                consoleCommand.perform(commandSender, args);
             }
-            if (args.length == 0) {
-                executor.commandHelp(player).run();
-                return false;
-            }
-            for (int j = 0; j < executor.commandList().size(); j++) {
-                SubCommand sub = executor.commandList().get(j);
-                if (args[0].equalsIgnoreCase(executor.name(sub))) {
-                    String[] array = Arrays.copyOfRange(args, 1, args.length);
-                    if (array.length < sub.syntax().length) {
-                        StringBuilder sb = new StringBuilder();
-                        for (String syntax : executor.syntax(sub)) {
-                            sb.append(syntax).append(" ");
-                        }
-                        player.sendMessage("/" + sb);
+            if ((commandSender instanceof Player player)) {
+                if (commandI instanceof NormalCommand normalCommand) {
+                    normalCommand.perform(player, s, args);
+                    return false;
+                } else if (commandI instanceof CommandLabel executor) {
+                    if (args.length == 0) {
+                        executor.commandHelp(player).run();
                         return false;
                     }
-                    executor.commandList().get(j).perform(player, array);
-                    return false;
+                    for (int j = 0; j < executor.commandList().size(); j++) {
+                        SubCommand sub = executor.commandList().get(j);
+                        if (args[0].equalsIgnoreCase(executor.name(sub))) {
+                            String[] array = Arrays.copyOfRange(args, 1, args.length);
+                            if (array.length < sub.syntax().length) {
+                                StringBuilder sb = new StringBuilder();
+                                for (String syntax : executor.syntax(sub)) {
+                                    sb.append(syntax).append(" ");
+                                }
+                                player.sendMessage("/" + sb);
+                                return false;
+                            }
+                            executor.commandList().get(j).perform(player, array);
+                            return false;
+                        }
+                    }
                 }
             }
         }
@@ -109,24 +108,28 @@ public class CommandManager implements org.bukkit.command.CommandExecutor, TabCo
         List<String> complete = new ArrayList<>();
         List<String> arguments = new ArrayList<>();
         if (LABELS.containsKey(label)) {
-            if (!(commandSender instanceof Player player)) return new ArrayList<>();
-            if (LABELS.get(label) instanceof NormalCommand normalCommand) {
-                return normalCommand.tabcomplete(player, args);
+            CommandI commandI = LABELS.get(label);
+            if (commandI instanceof ConsoleCommand consoleCommand) {
+                return consoleCommand.tabcomplete(commandSender, args);
             }
-            CommandLabel commandLabel = (CommandLabel) LABELS.get(label);
-            for (int j = 0; j < commandLabel.commandList().size(); j++) {
-                SubCommand sub = commandLabel.commandList().get(j);
-                arguments.add(commandLabel.name(sub));
-            }
-            for (String argument : arguments) {
-                if (argument.toLowerCase().startsWith(args[0].toLowerCase())) {
-                    complete.add(argument);
+            if (commandSender instanceof Player player) {
+                if (commandI instanceof NormalCommand normalCommand) {
+                    return normalCommand.tabcomplete(player, s, args);
                 }
+                CommandLabel commandLabel = (CommandLabel) commandI;
+                for (int j = 0; j < commandLabel.commandList().size(); j++) {
+                    SubCommand sub = commandLabel.commandList().get(j);
+                    arguments.add(commandLabel.name(sub));
+                }
+                for (String argument : arguments) {
+                    if (argument.toLowerCase().startsWith(args[0].toLowerCase())) {
+                        complete.add(argument);
+                    }
+                }
+                return complete;
+
             }
-            return complete;
-
         }
-
         return new ArrayList<>();
     }
 }
